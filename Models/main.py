@@ -23,7 +23,7 @@ def main():
     # # Prendo tutti gli indice degli stocks nel dataset processed perchè
     # # possiede la colonna CloseUSD quindi unificata per tutti gli indici
     # # e divido il dataset nei vari subset in base all'indice della stock
-    dfIndex = groupByIndex(dfProc, takeIndex(dfProc))
+    # dfIndex = groupByIndex(dfProc, takeIndex(dfProc))
 
     # # Utilizzo i dataset splittati per creare file csv ognuno per ogni stock
     # writeCsv_Index(groupByIndex(dfProc, takeIndex(dfProc)))
@@ -32,7 +32,14 @@ def main():
     # plotPie(dfProc)
 
     # # Plot grafico x y con Data e closeUSD di una stock
-    plotSomething(dfIndex["HSI"])
+    # plotSomething(dfIndex["HSI"])
+
+    # # prendo i vari indici e leggo il file correlato
+    dfReaded= dict()
+    for i in takeIndex(dfProc):
+        dfReaded[i] = pd.read_csv("../Dataset/"+i+".csv")
+
+    plotStocksTrend(dfReaded)
 
 
 

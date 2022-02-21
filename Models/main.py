@@ -45,15 +45,12 @@ def main():
     # # Calcolo delle features aggiuntive e poi le plotto assieme al trend delle stock
     df_TempPlot = groupByIndex(dfProc, takeIndex(dfProc))["NYA"]
 
-    # plotStocksTrend(df_TempPlot, "Date", "CloseUSD")
+    plotStockFeatures(df_TempPlot)
 
-    features = ["SMA-5", "SMA-10", "SMA-50", "SMA-100", "SMA-200", "SMA-500", "BUY-200-10", "SELL-5"]
-    multipleFeature(df_TempPlot, features)
-    plotStockFeatures(df_TempPlot, "Date", "CloseUSD", features, "NYA", "2020-01-01", "2021-01-01")
-
-
+    #features = ["SMA-5", "SMA-10", "SMA-50", "SMA-100", "SMA-200", "SMA-500", "BUY-200-10", "SELL-5"]
+    #multipleFeature(df_TempPlot, features)
+    #plotStockFeatures(df_TempPlot, "Date", "CloseUSD", features, "NYA", "2020-01-01", "2021-01-01")
 
 
-
-
-main()
+if __name__ == "__main__":
+    main()

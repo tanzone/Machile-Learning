@@ -65,6 +65,7 @@ def _controlFeatures(df, cols):
     if cols is None:
         cols = STANDARD_FEATURE
         multipleFeature(df, cols)
+    return cols
 
 
 def _plotFeatures(df, col, colX):
@@ -85,7 +86,7 @@ def plotStockFeatures(df, colX: str = "Date", colY: str = "CloseUSD", cols=None,
                       dateStart=DATE_START, dateEnd=DATE_END):
     # subset con il limite delle date
     df = df.loc[(df["Date"] > dateStart) & (df["Date"] <= dateEnd)]
-    _controlFeatures(df, cols)
+    cols = _controlFeatures(df, cols)
 
     # plot della stock
     x = df[colX].tolist()

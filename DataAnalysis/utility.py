@@ -1,47 +1,47 @@
 import numpy as np
 
 
-def rollingMean(df, col: str = "Close", num: int = 5):
+def rollingMean(df, col: str = "CloseUSD", num: int = 5):
     df["SMA-" + str(num)] = df[col].rolling(num).mean()
 
 
-def rollingLow(df, col: str = "Close", num: int = 10):
+def rollingLow(df, col: str = "CloseUSD", num: int = 10):
     df["LOW-" + str(num)] = df[col].rolling(num).min()
 
 
-def rollingHigh(df, col: str = "Close", num: int = 10):
+def rollingHigh(df, col: str = "CloseUSD", num: int = 10):
     df["HIGH-" + str(num)] = df[col].rolling(num).max()
 
 
-def buyTime(df, col1: str = "Close", sma1: str = "SMA-200", col2: str = "LOW-10", rate: float = 0.98):
+def buyTime(df, col1: str = "CloseUSD", sma1: str = "SMA-200", col2: str = "LOW-10", rate: float = 0.98):
     # creo lo sma-? necessario per il calcolo finale
     rollingMean(df, col1, int(sma1.split("-")[1]))
     # creo il low-? necessario per il calcolo finale
     rollingLow(df, col1, int(col2.split("-")[1]))
 
-    df["BUY"] = np.where((df[col1] > df[sma1]) &
+    df["BUY-"+sma1.split("-")[1]+"-"+col2.split("-")[1]] = np.where((df[col1] > df[sma1]) &
                          (df[col2].diff() < 0) &
                          (df[col1] * rate >= df["Low"].shift(-1)), 1, 0)
 
     df["BuyPrice"] = rate * df[col1]
 
 
-def sellTime(df, col1: str = "Close", sma1: str = "SMA-5", col2: str = "Open"):
+def sellTime(df, col1: str = "CloseUSD", sma1: str = "SMA-5", col2: str = "CloseUSD"):
     # creo lo sma-? necessario per il calcolo finale
     rollingMean(df, col1, int(sma1.split("-")[1]))
-    df["SELL"] = np.where((df[col1] > df[sma1]), 1, 0)
-    df["SellPrice"] = df[col2].shift(-1)
+    df["SELL-"+sma1.split("-")[1]] = np.where((df[col1] > df[sma1]), 1, 0)
+    df["SellPrice"] = df[col2].shift(-1) # DA FARE, capire se ci vuole o meno lo shift
 
 
 def profits(df):
     dfProfits = df.copy()
 
-    rollingMean(dfProfits, "Close", 5)
-    rollingMean(dfProfits, "Close", 200)
-    rollingLow(dfProfits, "Close", 10)
+    rollingMean(dfProfits, "CloseUSD", 5)
+    rollingMean(dfProfits, "CloseUSD", 200)
+    rollingLow(dfProfits, "CloseUSD", 10)
     dfProfits.dropna(inplace=True)
 
-    buyTime(dfProfits, "Close", "SMA-200", "LOW-10", 0.98)
+    buyTime(dfProfits, "CloseUSD", "SMA-200", "LOW-10", 0.98)
     sellTime(dfProfits, "SMA-5")
 
     x = df[(dfProfits.BUY == 1) or (dfProfits.SELL == 1)]
@@ -59,8 +59,18 @@ def backTest(arr):
     return winrate, max_dd, mean, gain
 
 
-
-
+def multipleFeature(df, features):
+    for feature in features:
+        if feature.split("-")[0] == "SMA":
+            rollingMean(df, "CloseUSD", int(feature.split("-")[1]))
+        if feature.split("-")[0] == "LOW":
+            rollingLow(df, "CloseUSD", int(feature.split("-")[1]))
+        if feature.split("-")[0] == "HIGH":
+            rollingHigh(df, "CloseUSD", int(feature.split("-")[1]))
+        if feature.split("-")[0] == "BUY":
+            buyTime(df, "CloseUSD", "SMA-"+feature.split("-")[1], "LOW-"+feature.split("-")[2])
+        if feature.split("-")[0] == "SELL":
+            sellTime(df, "CloseUSD", "SMA-" + feature.split("-")[1], "Open")
 
 
 ##
@@ -82,4 +92,3 @@ def backTest(arr):
 # # backtest di Rayner Teo
 # backTest(profits(df))
 ##
-

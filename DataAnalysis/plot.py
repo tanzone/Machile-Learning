@@ -3,16 +3,18 @@ import random
 import matplotlib.pyplot as plt
 import plotly.graph_objs as go
 import plotly.offline as ply
-from datetime import datetime
 
 from DataAnalysis.utility import *
 
 # Costante di colori per i plot
-COLORS = ["brown", "orange", "lawngreen", "yellow", "aqua", "blue", "pink", "violet", "purple"]
+COLOR_LINE = "purple"
+COLORS = []
+for i in range(30):
+    COLORS.append('#%06X' % random.randint(0, 0xFFFFFF))
+# COLORS = ["brown", "orange", "lawngreen", "yellow", "aqua", "blue", "pink", "violet", "purple"]
 DATE_START = "1500-01-01"
 DATE_END = "3000-01-01"
 STANDARD_FEATURE = ["SMA-5", "SMA-100", "SMA-200", "BUY-200-10", "SELL-5"]
-
 
 
 def plotPie(*datasets, col: str = "Index"):
@@ -27,38 +29,69 @@ def plotBar(*datasets, col: str = "Index"):
     pass
 
 
-def plotSomething(df, colX: str = "Date", colY: str = "CloseUSD", name: str = "temp", save: bool = False):
+def _plotly(title, name, colX, colY, data):
+    layout = dict(title=title, xaxis=dict(title=colX), yaxis=dict(title=colY), plot_bgcolor="black")
+    fig = dict(data=data, layout=layout)
+    ply.plot(fig, filename="../Plots/" + name + ".html")
+
+
+def plotSomething_line(df, colX: str = "Date", colY: str = "CloseUSD", name: str = "temp", color=[COLOR_LINE],
+                       loop: bool = False):
     x = df[colX].tolist()
     y = df[colY].tolist()
 
-    data = go.Scatter(x=x, y=y, name="", line=dict(color=COLORS[random.randint(0, len(COLORS) - 1)], width=4))
-    # dash="dot" o dash="dashdot" da mettere nel dict
+    data = go.Scatter(x=x, y=y, name=name, line=dict(color=color.pop(random.randint(0, len(COLORS) - 1)), width=4))
 
-    layout = dict(title="Plot {} on: {} - {}".format(name, colX, colY), xaxis=dict(title=colX), yaxis=dict(title=colY),
-                  plot_bgcolor="black")
-
-    fig = dict(data=data, layout=layout)
-    ply.plot(fig, filename="../Plots/" + name + ".html")
-    if not save:
-        # DA FARE, cancellare il file temp
-        pass
+    if not loop:
+        # show
+        title = "Plot {} on: {} - {}".format(name, colX, colY)
+        _plotly(title, name, colX, colY, data)
+    else:
+        return data
 
 
+def plotSomething_dash(df, colX: str = "Date", colY: str = "CloseUSD", name: str = "temp", color=[COLOR_LINE],
+                       loop: bool = False):
+    x = df[colX].tolist()
+    y = df[colY].tolist()
+
+    data = go.Scatter(x=x, y=y, name=colY, line=dict(color=color.pop(random.randint(0, len(COLORS) - 1)),
+                                                     width=2, dash="dash"))
+
+    if not loop:
+        # show
+        title = "Plot {} on: {} - {}".format(name, colX, colY)
+        _plotly(title, name, colX, colY, data)
+    else:
+        return data
+
+
+def plotSomething_marker(df, colX: str = "Date", colY: str = "CloseUSD", name: str = "temp", color=[COLOR_LINE],
+                         loop: bool = False):
+    x = df[colX].tolist()
+    y = df[colY].tolist()
+
+    data = go.Scatter(x=x, y=y, name=colY, mode="markers", marker=dict(color=color, size=8, line=dict(
+        color=color, width=3)))
+
+    if not loop:
+        # show
+        title = "Plot {} on: {} - {}".format(name, colX, colY)
+        _plotly(title, name, colX, colY, data)
+    else:
+        return data
+
+
+# Da sistemare
 def plotStocksTrend(datasets, colX: str = "Date", colY: str = "CloseUSD", name: str = "stocksTrend"):
-    color = COLORS
     data = list()
     for key in datasets:
         df = datasets[key]
-        x = df[colX].tolist()
-        y = df[colY].tolist()
-        data.append(
-            go.Scatter(x=x, y=y, name=key, line=dict(color=color.pop(random.randint(0, len(COLORS) - 1)), width=3)))
+        data.append(plotSomething_line(df, colX, colY, key, COLORS, True))
 
-    layout = dict(title="Plot {} on: {} - {}".format(name, colX, colY), xaxis=dict(title=colX), yaxis=dict(title=colY),
-                  plot_bgcolor="black")
-
-    fig = dict(data=data, layout=layout)
-    ply.plot(fig, filename="../Plots/" + name + ".html")
+    # show
+    title = "Plot {} on: {} - {}".format(name, colX, colY)
+    _plotly(title, name, colX, colY, data)
 
 
 def _controlFeatures(df, cols):
@@ -68,18 +101,11 @@ def _controlFeatures(df, cols):
     return cols
 
 
-def _plotFeatures(df, col, colX):
-    dfSupp = df[df[col] == 1]
-    x = dfSupp[colX].tolist()
-
+def _setFeatures(df, col):
     if col.split("-")[0] == "BUY":
-        color = "green"
-        y = dfSupp["BuyPrice"].tolist()
-        return color, x, y
+        return df[df[col] == 1], "green", "BuyPrice"
     elif col.split("-")[0] == "SELL":
-        color = "red"
-        y = dfSupp["SellPrice"].tolist()
-        return color, x, y
+        return df[df[col] == 1], "red", "SellPrice"
 
 
 def plotStockFeatures(df, colX: str = "Date", colY: str = "CloseUSD", cols=None, name: str = "StockFeature",
@@ -89,30 +115,32 @@ def plotStockFeatures(df, colX: str = "Date", colY: str = "CloseUSD", cols=None,
     cols = _controlFeatures(df, cols)
 
     # plot della stock
-    x = df[colX].tolist()
-    y = df[colY].tolist()
-
-    color = COLORS
     title = "Plot {} on: {} - {}".format(name, colX, colY)
+
     data = list()
-    data.append(go.Scatter(x=x, y=y, name=name, line=dict(color=color.pop(random.randint(0, len(COLORS) - 1)), width=4)))
+    data.append(plotSomething_line(df, colX, colY, name, [COLOR_LINE], True))
 
     # plot delle features
     for col in cols:
         if col.split("-")[0] == "BUY" or col.split("-")[0] == "SELL":
-            color, x, y = _plotFeatures(df, col, colX)
-            data.append(
-                go.Scatter(x=x, y=y, name=col, mode="markers", marker=dict(color=color, size=8, line=dict(
-                                                                                    color=color, width=3))))
-            title += " - {}".format(col)
+            dfPlot, colorPlot, colPlot = _setFeatures(df, col)
+            data.append(plotSomething_marker(dfPlot, colX, colPlot, name, [colorPlot], True))
         else:
-            y = df[col].tolist()
-            data.append(
-                go.Scatter(x=x, y=y, name=col, line=dict(color=color.pop(random.randint(0, len(COLORS) - 1)),
-                                                         width=2, dash="dash")))
-            title += " - {}".format(col)
+            data.append(plotSomething_dash(df, colX, colY, name, COLORS, True))
+
+        title += " - {}".format(col)
 
     # show
-    layout = dict(title=title, xaxis=dict(title=colX), yaxis=dict(title=colY), plot_bgcolor="black")
-    fig = dict(data=data, layout=layout)
-    ply.plot(fig, filename="../Plots/" + name + ".html")
+    _plotly(title, name, colX, colY, data)
+
+
+# Da sistemare
+def plotStocksVolume(datasets, name: str = "temp"):
+    data = list()
+    for key in datasets:
+        df = datasets[key]
+        data.append(plotSomething_line(df, "Date", "Volume", key, COLORS, True))
+
+    # show
+    title = "Plot {} on: {} - {}".format(name, "Date", "Volume")
+    _plotly(title, name, "Date", "Volume", data)

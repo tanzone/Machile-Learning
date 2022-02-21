@@ -6,6 +6,12 @@ def info(*datasets):
     for df in datasets:
         df.info()
         print("------------------------------------------\n")
+        df.describe()
+        print("------------------------------------------\n")
+        df.groupby('Index').describe()
+        print("------------------------------------------\n")
+        df.isnull().sum()
+        print("------------------------------------------\n")
 
 
 def controlValues(*datasets):

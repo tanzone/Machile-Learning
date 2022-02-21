@@ -33,23 +33,36 @@ def main():
     # plotPie(dfProc)
 
     # # Plot grafico x y con Data e closeUSD di una stock
-    # plotSomething(groupByIndex(dfProc, takeIndex(dfProc))["HSI"])
+    # stock = "HSI"
+    # plotSomething(groupByIndex(dfProc, takeIndex(dfProc))[stock])
+
+    # # Plot grafico x y con data e volume
+    # stock = "NYA"
+    # plotSomething(groupByIndex(dfProc, takeIndex(dfProc))[stock], "Date", "Volume", "Volume of " + stock)
 
     # # prendo i vari indici e leggo il file correlato poi stampo il plot degli stocks
     # dfReaded= dict()
     # for i in takeIndex(dfProc):
     #    dfReaded[i] = pd.read_csv("../Dataset/"+i+".csv")
-
     # plotStocksTrend(dfReaded)
 
-    # # Calcolo delle features aggiuntive e poi le plotto assieme al trend delle stock
-    df_TempPlot = groupByIndex(dfProc, takeIndex(dfProc))["NYA"]
+    # # plotto le feature assieme al trend della stock
+    # stock = "NYA"
+    # df_TempPlot = groupByIndex(dfProc, takeIndex(dfProc))[stock]
+    # plotStockFeatures(df_TempPlot)
 
-    plotStockFeatures(df_TempPlot)
+    # # Calcolo delle features aggiuntive e poi le plotto assieme al trend della stock
+    # stock = "NYA"
+    # df_TempPlot = groupByIndex(dfProc, takeIndex(dfProc))[stock]
+    # features = ["SMA-5", "SMA-10", "SMA-50", "SMA-100", "SMA-200", "SMA-500", "BUY-200-10", "SELL-5"]
+    # multipleFeature(df_TempPlot, features)
+    # plotStockFeatures(df_TempPlot, "Date", "CloseUSD", features, "NYA", "2020-01-01", "2021-01-01")
 
-    #features = ["SMA-5", "SMA-10", "SMA-50", "SMA-100", "SMA-200", "SMA-500", "BUY-200-10", "SELL-5"]
-    #multipleFeature(df_TempPlot, features)
-    #plotStockFeatures(df_TempPlot, "Date", "CloseUSD", features, "NYA", "2020-01-01", "2021-01-01")
+    # # Plot volume delle stocks
+    dfReaded = dict()
+    for i in takeIndex(dfProc):
+       dfReaded[i] = pd.read_csv("../Dataset/"+i+".csv")
+    plotStocksVolume(dfReaded)
 
 
 if __name__ == "__main__":

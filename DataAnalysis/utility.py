@@ -1,6 +1,16 @@
 import numpy as np
 
 
+def stockChange(df, col: str = "High"):
+    df["CHANGE"] = df[col].div(df[col].shift())
+
+
+def stockReturn(df, col: str = "CHANGE"):
+    stockChange(df)
+    df["RETURN"] = df[col].sub(1).mul(100)
+    # df["RETURN"] = df[col].sub(1).mul(100) df["CloseUSD"].pct_change()
+
+
 def rollingMean(df, col: str = "CloseUSD", num: int = 5):
     df["SMA-" + str(num)] = df[col].rolling(num).mean()
 
@@ -11,6 +21,14 @@ def rollingLow(df, col: str = "CloseUSD", num: int = 10):
 
 def rollingHigh(df, col: str = "CloseUSD", num: int = 10):
     df["HIGH-" + str(num)] = df[col].rolling(num).max()
+
+
+def expandingMean(df, col: str = "High"):
+    df["EXPANDING-MEAN"] = df[col].expanding().mean()
+
+
+def expandingStd(df, col: str = "High"):
+    df["EXPANDING-STD"] = df[col].expanding().std()
 
 
 def buyTime(df, col1: str = "CloseUSD", sma1: str = "SMA-200", col2: str = "LOW-10", rate: float = 0.98):
@@ -59,7 +77,7 @@ def backTest(arr):
     return winrate, max_dd, mean, gain
 
 
-def multipleFeature(df, features):
+def addFeatures(df, features):
     for feature in features:
         if feature.split("-")[0] == "SMA":
             rollingMean(df, "CloseUSD", int(feature.split("-")[1]))
@@ -71,24 +89,13 @@ def multipleFeature(df, features):
             buyTime(df, "CloseUSD", "SMA-"+feature.split("-")[1], "LOW-"+feature.split("-")[2])
         if feature.split("-")[0] == "SELL":
             sellTime(df, "CloseUSD", "SMA-" + feature.split("-")[1], "Open")
+        if feature.split("-")[0] == "CHANGE":
+            rollingChange(df, "High",  int(feature.split("-")[1]))
+        if feature.split("-")[0] == "EXPANDING":
+            if feature.split("-")[1] == "MEAN":
+                expandingMean(df, "High")
+            elif feature.split("-")[1] == "STD":
+                expandingStd(df, "High")
 
 
-##
-# rollingMean(df, "Close", 5)
-# rollingMean(df, "Close", 30)
-# rollingMean(df, "Close", 100)
-# rollingMean(df, "Close", 200)
-#
-# rollingLow(df, "Close", 10)
-# rollingHigh(df, "Close", 10)
-# rollingLow(df, "Close", 100)
-# rollingHigh(df, "Close", 100)
-#
-# df.dropna(inplace=True)
-#
-# buyTime(df, "Close", "SMA-200", "LOW-10", 0.98)
-# sellTime(df, "SMA-5")
-#
-# # backtest di Rayner Teo
-# backTest(profits(df))
-##
+

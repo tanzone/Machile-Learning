@@ -2,14 +2,13 @@ import numpy as np
 
 
 def stockChange(df, col: str = "High"):
-    df["CHANGE"] = df[col].div(df[col].shift())
+    df["CHANGE"] = df["CloseUSD"].pct_change()
+    # df["CHANGE"] = df[col].div(df[col].shift())
 
 
-def stockReturn(df, col: str = "CHANGE"):
-    stockChange(df)
-    df["RETURN"] = df[col].sub(1).mul(100)
-    # df["RETURN"] = df[col].sub(1).mul(100) df["CloseUSD"].pct_change()
-
+def stockReturn(df, col: str = "CloseUSD"):
+    df["RETURN"] = (df[col] / df[col].shift(1)) - 1
+    # df["RETURN"] = df[col].pct_change()
 
 def rollingMean(df, col: str = "CloseUSD", num: int = 5):
     df["SMA-" + str(num)] = df[col].rolling(num).mean()

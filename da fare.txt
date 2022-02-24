@@ -1,0 +1,33 @@
+- Grafico delle stock volatility
+https://www.kaggle.com/elakapoor/stock-analysis
+
+- Giorni della settimana delle stocks
+https://www.kaggle.com/raguee/notebook581af1fdfe
+
+- Varie conversioni delle monete
+https://www.kaggle.com/burkepeters/currency-adjustment
+
+- Varie predizioni plottate tra loro per vedere la differenza
+
+
+- Varie info
+https://www.kaggle.com/bryanb/introduction-to-time-series-analysis
+
+
+- da fare daily return in giu
+https://www.kaggle.com/faressayah/stock-market-analysis-prediction-using-lstm
+
+
+- predict
+https://www.kaggle.com/humamfauzi/multiple-stock-prediction-using-single-nn
+
+- standard deviation del return, volatilità
+https://www.kaggle.com/tomasmantero/eda-warren-buffett-us-stock-companies
+
+
+-teoria autocorrelazione e altro
+https://www.alpharithms.com/predicting-stock-prices-with-linear-regression-214618/
+
+- covarianza e varianza
+https://www.youtube.com/watch?v=t2Zh-qnFa40&list=PL9ATnizYJ7f9pCPBzr-isv0_R3E6OW6YY&index=5&ab_channel=Algovibes
+

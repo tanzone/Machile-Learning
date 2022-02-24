@@ -5,6 +5,8 @@ import plotly.graph_objs as go
 import plotly.offline as ply
 import matplotlib.pyplot as plt
 
+import pandas as pd
+
 plt.style.use("fivethirtyeight")
 
 # Costante di colori per i plot
@@ -28,9 +30,13 @@ def plotPie(*datasets, col: str = "Index"):
         plt.show()
 
 
-# DA FARE, plot bar dei valori presenti in ogni stocks
-def plotBar(*datasets, col: str = "Index"):
-    pass
+def plotBar(*datasets):
+    for df in datasets:
+        df["Datetime"] = pd.to_datetime(df["Date"])
+        df["Datetime"] = pd.to_datetime(df["Datetime"], format='%d%b%Y:%H:%M:%S.%f')
+        df["Day"] = df["Datetime"].dt.day_name()
+        df[["Day", "CloseUSD"]].groupby("Day").count().plot(kind="bar", legend=None)
+        plt.show()
 
 
 def plotInfoStock(df, title: str = "temp"):
@@ -82,6 +88,7 @@ def plotStocksReturn_matlib(datasets):
         i += 1
 
     plt.show()
+
 
 def plotStocksReturn_matlib_bar(datasets):
     i = 1

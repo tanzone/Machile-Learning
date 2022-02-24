@@ -1,4 +1,6 @@
 import numpy as np
+import pandas as pd
+from statsmodels.tsa.stattools import adfuller
 
 
 def stockChange(df, col: str = "High"):
@@ -9,6 +11,7 @@ def stockChange(df, col: str = "High"):
 def stockReturn(df, col: str = "CloseUSD"):
     df["RETURN"] = (df[col] / df[col].shift(1)) - 1
     # df["RETURN"] = df[col].pct_change()
+
 
 def rollingMean(df, col: str = "CloseUSD", num: int = 5):
     df["SMA-" + str(num)] = df[col].rolling(num).mean()
@@ -36,9 +39,10 @@ def buyTime(df, col1: str = "CloseUSD", sma1: str = "SMA-200", col2: str = "LOW-
     # creo il low-? necessario per il calcolo finale
     rollingLow(df, col1, int(col2.split("-")[1]))
 
-    df["BUY-"+sma1.split("-")[1]+"-"+col2.split("-")[1]] = np.where((df[col1] > df[sma1]) &
-                         (df[col2].diff() < 0) &
-                         (df[col1] * rate >= df["Low"].shift(-1)), 1, 0)
+    df["BUY-" + sma1.split("-")[1] + "-" + col2.split("-")[1]] = np.where((df[col1] > df[sma1]) &
+                                                                          (df[col2].diff() < 0) &
+                                                                          (df[col1] * rate >= df["Low"].shift(-1)), 1,
+                                                                          0)
 
     df["BuyPrice"] = rate * df[col1]
 
@@ -46,8 +50,8 @@ def buyTime(df, col1: str = "CloseUSD", sma1: str = "SMA-200", col2: str = "LOW-
 def sellTime(df, col1: str = "CloseUSD", sma1: str = "SMA-5", col2: str = "CloseUSD"):
     # creo lo sma-? necessario per il calcolo finale
     rollingMean(df, col1, int(sma1.split("-")[1]))
-    df["SELL-"+sma1.split("-")[1]] = np.where((df[col1] > df[sma1]), 1, 0)
-    df["SellPrice"] = df[col2].shift(-1) # DA FARE, capire se ci vuole o meno lo shift
+    df["SELL-" + sma1.split("-")[1]] = np.where((df[col1] > df[sma1]), 1, 0)
+    df["SellPrice"] = df[col2].shift(-1)  # DA FARE, capire se ci vuole o meno lo shift
 
 
 def profits(df):
@@ -85,11 +89,11 @@ def addFeatures(df, features):
         if feature.split("-")[0] == "HIGH":
             rollingHigh(df, "CloseUSD", int(feature.split("-")[1]))
         if feature.split("-")[0] == "BUY":
-            buyTime(df, "CloseUSD", "SMA-"+feature.split("-")[1], "LOW-"+feature.split("-")[2])
+            buyTime(df, "CloseUSD", "SMA-" + feature.split("-")[1], "LOW-" + feature.split("-")[2])
         if feature.split("-")[0] == "SELL":
             sellTime(df, "CloseUSD", "SMA-" + feature.split("-")[1], "Open")
         if feature.split("-")[0] == "CHANGE":
-            rollingChange(df, "High",  int(feature.split("-")[1]))
+            stockChange(df, "High", int(feature.split("-")[1]))
         if feature.split("-")[0] == "EXPANDING":
             if feature.split("-")[1] == "MEAN":
                 expandingMean(df, "High")
@@ -97,4 +101,23 @@ def addFeatures(df, features):
                 expandingStd(df, "High")
 
 
+def adfTest(series, title: str = ""):
+    print("Augmented Dickey-Fuller Test: {}".format(title))
+    result = adfuller(series.dropna(), autolag="AIC")
 
+    labels = ['ADF test statistic', 'p-value', '# lags used', '# observations']
+    out = pd.Series(result[0:4], index=labels)
+
+    for key, val in result[4].items():
+        out["critical value ({})".format(key)] = val
+
+    print(out.to_string())
+
+    if result[1] <= 0.05:
+        print("Strong evidence against the null hypothesis")
+        print("Reject the null hypothesis")
+        print("Data has no unit root and is stationary")
+    else:
+        print("Weak evidence against the null hypothesis")
+        print("Fail to reject the null hypothesis")
+        print("Data has a unit root and is non-stationary")

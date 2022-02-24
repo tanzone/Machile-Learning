@@ -1,13 +1,8 @@
 - Grafico delle stock volatility
 https://www.kaggle.com/elakapoor/stock-analysis
 
-- Giorni della settimana delle stocks
-https://www.kaggle.com/raguee/notebook581af1fdfe
-
 - Varie conversioni delle monete
 https://www.kaggle.com/burkepeters/currency-adjustment
-
-- Varie predizioni plottate tra loro per vedere la differenza
 
 
 - Varie info
@@ -31,3 +26,39 @@ https://www.alpharithms.com/predicting-stock-prices-with-linear-regression-21461
 - covarianza e varianza
 https://www.youtube.com/watch?v=t2Zh-qnFa40&list=PL9ATnizYJ7f9pCPBzr-isv0_R3E6OW6YY&index=5&ab_channel=Algovibes
 
+- Varie predizioni plottate tra loro per vedere la differenza
+
+
+
+-Varie Info
+
+Cosa descrive la migliore stazionarietà?
+Una serie storica stazionaria è una serie le cui proprietà non dipendono dal momento in cui la serie viene osservata.
+Pertanto, le serie temporali con trend, o con stagionalità, non sono stazionarie
+Una serie storica con comportamento ciclico (ma senza trend o stagionalità) è stazionaria.
+
+A cosa serve la stazionarietà?
+La maggior parte dei metodi di previsione statistica sono progettati per funzionare su una serie temporale stazionaria.
+Il primo passaggio nel processo di previsione consiste in genere nell'eseguire alcune trasformazioni per convertire una
+serie non stazionaria in stazionaria. La previsione di una serie stazionaria è relativamente più semplice e le
+previsioni sono più affidabili.
+Sappiamo che la regressione lineare funziona meglio se i predittori (variabili X) non sono correlati tra loro.
+Quindi, stazionare la serie risolve questo problema poiché rimuove qualsiasi autocorrelazione persistente,
+rendendo così i predittori (ritardi della serie) nei modelli di previsione quasi indipendenti.
+Il più comunemente usato è il test ADF (Augmented Dickey Fuller), dove l'ipotesi nulla è che la serie temporale possieda una radice unitaria
+(o passeggiata casuale con deriva) e non sia stazionaria. Quindi, se il valore P nel test ADF è inferiore al livello di
+significatività (0,05), si rifiuta l'ipotesi nulla e la serie è stazionaria.
+
+
+La correlazione misura l'estensione di una relazione lineare tra due variabili.
+
+L'autocorrelazione misura la relazione lineare tra i valori ritardati di una serie temporale, ad esempio tra yt e yt−1.
+Se una serie è significativamente autocorrelata, ciò significa che i valori precedenti della serie (ritardi)
+possono essere utili per prevedere il valore corrente.
+
+Le autocorrelazioni parziali misurano la dipendenza lineare di una variabile dopo aver rimosso l'effetto di altre
+variabili che influiscono su entrambe le variabili. Cioè, l'autocorrelazione parziale al ritardo k è l'autocorrelazione
+tra y(t) e y(t)+y(t+k) che non è considerata dai ritardi da 1 a k−1.
+
+In sostanza, tracciamo la relazione tra i residui del giorno/mese precedente rispetto ai valori reali del giorno
+corrente. In generale, ci aspettiamo che l'autocorrelazione parziale diminuisca abbastanza rapidamente.

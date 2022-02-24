@@ -37,6 +37,9 @@ def main():
     # # Plot a torta della percentuale di indici che compaiono nel dataset
     # plotPie(dfProc)
 
+    # # Plot a barre della quantità di valori presenti per giorni della settimana
+    # plotBar(dfProc)
+
 
     # # Plot grafico x y con Data e closeUSD di una stock
     # stock = "HSI"
@@ -64,7 +67,7 @@ def main():
     # plotStocksReturn_matlib(groupByIndex(dfProc, takeIndex(dfProc)))
 
     # # Multi plot del ritorno giornaliero delle stock come media a grafico a barre
-    plotStocksReturn_matlib_bar(groupByIndex(dfProc, takeIndex(dfProc)))
+    # plotStocksReturn_matlib_bar(groupByIndex(dfProc, takeIndex(dfProc)))
 
     # # Plot volume delle stocks
     # dfReaded = dict()
@@ -107,6 +110,12 @@ def main():
     # plotCandlestick(groupByIndex(dfProc, takeIndex(dfProc))[stock], "Candlestick-" + stock, "2020-01-01", "2021-01-01")
 
 
+    # # ADF test per la stazionarietà
+    # toTest = dfProc[["Date", "CloseUSD"]].copy()
+    # toTest.set_index("Date", inplace=True)
+    # toTest.index = pd.to_datetime(toTest.index)
+    # toTest = toTest.resample('1M').mean()
+    # adfTest(toTest["CloseUSD"], title='')
 
 
 

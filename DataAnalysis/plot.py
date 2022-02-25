@@ -12,7 +12,7 @@ import seaborn as sns
 
 
 # Costante di colori per i plot
-COLOR_LINE = "purple"
+COLOR_LINE =  ["purple", "Blue"]
 COLORS = []
 for i in range(30):
     COLORS.append('#%06X' % random.randint(0, 0xFFFFFF))
@@ -80,7 +80,7 @@ def plotStocksReturn_matlib(datasets):
         if i == 5:
             continue
         df = datasets[key]
-        stockReturn(df)
+        rollingReturn(df)
         df = df.loc[(df["Date"] > "2020-01-01") & (df["Date"] <= "2021-01-01")]
         plt.subplot(2, 2, i)
         plt.plot(df["Date"], df["RETURN"], marker='o')
@@ -99,7 +99,7 @@ def plotStocksReturn_matlib_bar(datasets):
         if i == 5:
             continue
         df = datasets[key]
-        stockReturn(df)
+        rollingReturn(df)
         df = df.loc[(df["Date"] > "2020-01-01") & (df["Date"] <= "2021-01-01")]
         plt.subplot(2, 2, i)
         df["RETURN"].hist(bins=50)
@@ -144,7 +144,7 @@ def _plotly(title, name, colX, colY, data):
     ply.plot(fig, filename="../Plots/" + name + ".html")
 
 
-def plotSomething_line(df, colX: str = "Date", colY: str = "CloseUSD", name: str = "temp", color=[COLOR_LINE],
+def plotSomething_line(df, colX: str = "Date", colY: str = "CloseUSD", name: str = "temp", color=COLOR_LINE,
                        loop: bool = False):
     x = df[colX].tolist()
     y = df[colY].tolist()
@@ -159,7 +159,7 @@ def plotSomething_line(df, colX: str = "Date", colY: str = "CloseUSD", name: str
         return data
 
 
-def plotSomething_dash(df, colX: str = "Date", colY: str = "CloseUSD", name: str = "temp", color=[COLOR_LINE],
+def plotSomething_dash(df, colX: str = "Date", colY: str = "CloseUSD", name: str = "temp", color=COLOR_LINE,
                        loop: bool = False):
     x = df[colX].tolist()
     y = df[colY].tolist()
@@ -235,7 +235,7 @@ def plotStockFeatures(df, colX: str = "Date", colY: str = "CloseUSD", cols=None,
     color = COLORS
 
     data = list()
-    data.append(plotSomething_line(df, colX, colY, name, [COLOR_LINE], True))
+    data.append(plotSomething_line(df, colX, colY, name, COLOR_LINE, True))
 
     # plot delle features
     for col in cols:
@@ -271,16 +271,27 @@ def plotCandlestick(df, name: str = "CandlestickTemp", dateStart=DATE_START, dat
     _plotly(title, name, "Date", "CloseUSD", data)
 
 
-def plotVolatility(datasets, name: str = "VolatilityBarTemp"):
+def plotVolatility(datasets, col: str = "RETURN", name: str = "VolatilityBarTemp"):
     data = go.Figure()
     for key in datasets:
         df = datasets[key]
-        stockReturn(df, "CloseUSD")
-        data.add_trace(go.Histogram(x=df["RETURN"], name=key))
+        rollingReturn(df, "CloseUSD")
+        data.add_trace(go.Histogram(x=df[col], name=key))
 
     # show
     _plotly("Stock Volatility", name, "Return", "Value", data)
 
+
+def plotOutliers(datasets, col: str = "CloseUSD", name: str = "Outliers", dateStart=DATE_START, dateEnd=DATE_END):
+    data = go.Figure()
+    for key in datasets:
+        df = datasets[key]
+        df = df.loc[(df["Date"] > dateStart) & (df["Date"] <= dateEnd)]
+        rollingReturn(df, "CloseUSD")
+        data.add_trace(go.Box(x=df[col], name=key))
+
+    # show
+    _plotly("Outliers of stocks", name, "", col, data)
 
 
 
@@ -352,6 +363,7 @@ def plotDetails(datasets, feature: str = "CloseUSD", dateStart=DATE_START, dateE
     returns_fig.map_diag(plt.hist, bins=30)
 
     plt.show()
+
 
 
 

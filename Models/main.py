@@ -10,10 +10,17 @@ def main():
     dfInfo = pd.read_csv("../Dataset/indexInfo.csv")
     dfProc = pd.read_csv("../Dataset/indexProcessed.csv")
 
+    rollingChange(dfProc, "CloseUSD", 1)
+    rollingReturn(dfProc, "CloseUSD", 1)
+
+    print(dfProc[["CHANGE"]].head(10))
+    #print(dfProc[["RETURN"]].head(10))
+
 
     # # info sui dataset
     # info(dfData, dfInfo, dfProc)
     # controlValues(dfData, dfInfo, dfProc)
+
     # # numero valori per indice
     # countValue(dfData, dfProc)
 
@@ -37,13 +44,16 @@ def main():
     # # Plot a torta della percentuale di indici che compaiono nel dataset
     # plotPie(dfProc)
 
+
     # # Plot a barre della quantità di valori presenti per giorni della settimana
     # plotBar(dfProc)
+    # stock = "HSI"
+    # plotBar(groupByIndex(dfProc, takeIndex(dfProc))[stock])
 
 
     # # Plot grafico x y con Data e closeUSD di una stock
     # stock = "HSI"
-    # plotSomething(groupByIndex(dfProc, takeIndex(dfProc))[stock])
+    # plotSomething_line(groupByIndex(dfProc, takeIndex(dfProc))[stock])
 
 
     # # Plot grafico x y con data e volume
@@ -54,7 +64,7 @@ def main():
     # # prendo i vari indici e leggo il file correlato poi stampo il plot degli stocks
     # dfReaded= dict()
     # for i in takeIndex(dfProc):
-    #    dfReaded[i] = pd.read_csv("../Dataset/"+i+".csv")
+    #     dfReaded[i] = pd.read_csv("../Dataset/"+i+".csv")
     # plotStocksTrend(dfReaded)
 
 
@@ -78,8 +88,7 @@ def main():
 
     # # plotto le feature assieme al trend della stock
     # stock = "NYA"
-    # df_TempPlot = groupByIndex(dfProc, takeIndex(dfProc))[stock]
-    # plotStockFeatures(df_TempPlot)
+    # plotStockFeatures(groupByIndex(dfProc, takeIndex(dfProc))[stock])
 
 
     # # Calcolo delle features aggiuntive e poi le plotto assieme al trend della stock
@@ -95,6 +104,15 @@ def main():
     # # Plot (matplotlib) tutte le info su una stock
     # stock = "NYA"
     # df_TempPlot = groupByIndex(dfProc, takeIndex(dfProc))[stock]
+    # plotInfoStock(df_TempPlot)
+
+
+    # # Plot (matplotlib) tutte le info su una stock con l'aggiunta di altre features
+    # stock = "NYA"
+    # df_TempPlot = groupByIndex(dfProc, takeIndex(dfProc))[stock]
+    # features = ["SMA-5", "SMA-10", "SMA-50", "SMA-100", "SMA-200", "SMA-500", "LOW-10", "HIGH-10",
+    #             "EXPANDING-MEAN", "EXPANDING-STD", "BUY-200-10", "SELL-5"]
+    # addFeatures(df_TempPlot, features)
     # plotInfoStock(df_TempPlot)
 
 
@@ -119,12 +137,21 @@ def main():
 
 
     # # Plot volatilità delle stock
-    # plotVolatility_bar(groupByIndex(dfProc, takeIndex(dfProc)))
+    # plotVolatility(groupByIndex(dfProc, takeIndex(dfProc)))
 
 
-    # # Plot heatMap di una stock
+    # # Plot heatMap di una stock con le features base
     # stock = "NYA"
     # plotHeatMap_features(groupByIndex(dfProc, takeIndex(dfProc))[stock])
+
+
+    # # Plot heatMap di una stock con features aggiuntive
+    # stock = "NYA"
+    # df_TempPlot = groupByIndex(dfProc, takeIndex(dfProc))[stock]
+    # features = ["SMA-5", "SMA-10", "SMA-50", "SMA-100", "SMA-200", "SMA-500", "LOW-10", "HIGH-10",
+    #             "EXPANDING-MEAN", "EXPANDING-STD", "BUY-200-10", "SELL-5"]
+    # addFeatures(df_TempPlot, features)
+    # plotHeatMap_features(df_TempPlot)
 
 
     # # Plot heatMap delle stock tra loro
@@ -134,6 +161,8 @@ def main():
     # # Plot joint delle stock a due a due
     # plotJoint(groupByIndex(dfProc, takeIndex(dfProc)), "NYA", "NYA", "CloseUSD", "2020-01-01", "2021-01-01")
     # plotJoint(groupByIndex(dfProc, takeIndex(dfProc)), "NYA", "HSI", "CloseUSD", "2020-01-01", "2021-01-01")
+    # plotJoint(groupByIndex(dfProc, takeIndex(dfProc)), "000001.SS", "399001.SZ", "CloseUSD", "2020-01-01", "2021-01-01")
+    # plotJoint(groupByIndex(dfProc, takeIndex(dfProc)), "HSI", "GDAXI", "CloseUSD", "2020-01-01", "2021-01-01")
 
 
     # # Plot pair tra tutte le stocks
@@ -141,11 +170,18 @@ def main():
 
 
     # # Plot dettagli
+    # # Da errori perchè c'è 0 varianza tra alcune combinazioni di stocks ma non è un problema
     # plotDetails(groupByIndex(dfProc, takeIndex(dfProc)), "CloseUSD", "2020-01-01", "2021-01-01")
 
 
     # # Plot Risk per stocks
-    plotRisk(groupByIndex(dfProc, takeIndex(dfProc)), "CloseUSD", "2020-01-01", "2021-01-01")
+    # plotRisk(groupByIndex(dfProc, takeIndex(dfProc)), "CloseUSD", "2020-01-01", "2021-01-01")
+
+
+    # # Plot Outliers
+    # plotOutliers(groupByIndex(dfProc, takeIndex(dfProc)), "CloseUSD")
+
+
 
 
 if __name__ == "__main__":

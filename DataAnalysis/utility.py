@@ -3,22 +3,48 @@ import pandas as pd
 from statsmodels.tsa.stattools import adfuller
 
 
-def stockChange(df, col: str = "High"):
-    df["CHANGE"] = df["CloseUSD"].pct_change()
-    # df["CHANGE"] = df[col].div(df[col].shift())
+# change percentuale calcolato su un periodo
+def rollingChange(df, col: str = "High", num: int = 30):
+    df["CHANGE"] = df["CloseUSD"].pct_change(periods = num)
 
 
-def stockReturn(df, col: str = "CloseUSD"):
+def rollingReturn(df, col: str = "CloseUSD", num: int = 30):
     df["RETURN"] = (df[col] / df[col].shift(1)) - 1
 
 
-def stockComReturn(df):
-    stockReturn(df, "CloseUSD")
+def stockCumReturn(df):
+    rollingReturn(df, "CloseUSD")
     df["CUMRETURN"] = (1 + df["RETURN"]).cumprod()
 
 
-def rollingMean(df, col: str = "CloseUSD", num: int = 5):
+def rollingSma(df, col: str = "CloseUSD", num: int = 5):
     df["SMA-" + str(num)] = df[col].rolling(num).mean()
+
+
+#Da provare
+def rollingEma(df, col: str = "CloseUSD", num: int = 5):
+    df["EMA-" + str(num)] = df[col].ewm(span=num, adjust=False).mean()
+
+
+#da finire
+def rollingRoi():
+    pass
+
+
+#da finire
+def rollingRoe():
+    pass
+
+
+#da finire
+def rollingEps():
+    pass
+
+
+#da finire
+def rollingCagr():
+    pass
+
 
 
 def rollingLow(df, col: str = "CloseUSD", num: int = 10):
@@ -37,9 +63,10 @@ def expandingStd(df, col: str = "High"):
     df["EXPANDING-STD"] = df[col].expanding().std()
 
 
+#da sistemare
 def buyTime(df, col1: str = "CloseUSD", sma1: str = "SMA-200", col2: str = "LOW-10", rate: float = 0.98):
     # creo lo sma-? necessario per il calcolo finale
-    rollingMean(df, col1, int(sma1.split("-")[1]))
+    rollingSma(df, col1, int(sma1.split("-")[1]))
     # creo il low-? necessario per il calcolo finale
     rollingLow(df, col1, int(col2.split("-")[1]))
 
@@ -51,18 +78,20 @@ def buyTime(df, col1: str = "CloseUSD", sma1: str = "SMA-200", col2: str = "LOW-
     df["BuyPrice"] = rate * df[col1]
 
 
+#da sistemare
 def sellTime(df, col1: str = "CloseUSD", sma1: str = "SMA-5", col2: str = "CloseUSD"):
     # creo lo sma-? necessario per il calcolo finale
-    rollingMean(df, col1, int(sma1.split("-")[1]))
+    rollingSma(df, col1, int(sma1.split("-")[1]))
     df["SELL-" + sma1.split("-")[1]] = np.where((df[col1] > df[sma1]), 1, 0)
     df["SellPrice"] = df[col2].shift(-1)  # DA FARE, capire se ci vuole o meno lo shift
 
 
+#da rivedere
 def profits(df):
     dfProfits = df.copy()
 
-    rollingMean(dfProfits, "CloseUSD", 5)
-    rollingMean(dfProfits, "CloseUSD", 200)
+    rollingSma(dfProfits, "CloseUSD", 5)
+    rollingSma(dfProfits, "CloseUSD", 200)
     rollingLow(dfProfits, "CloseUSD", 10)
     dfProfits.dropna(inplace=True)
 
@@ -87,7 +116,7 @@ def backTest(arr):
 def addFeatures(df, features):
     for feature in features:
         if feature.split("-")[0] == "SMA":
-            rollingMean(df, "CloseUSD", int(feature.split("-")[1]))
+            rollingSma(df, "CloseUSD", int(feature.split("-")[1]))
         if feature.split("-")[0] == "LOW":
             rollingLow(df, "CloseUSD", int(feature.split("-")[1]))
         if feature.split("-")[0] == "HIGH":
@@ -97,7 +126,7 @@ def addFeatures(df, features):
         if feature.split("-")[0] == "SELL":
             sellTime(df, "CloseUSD", "SMA-" + feature.split("-")[1], "Open")
         if feature.split("-")[0] == "CHANGE":
-            stockChange(df, "High", int(feature.split("-")[1]))
+            rollingChange(df, "High", int(feature.split("-")[1]))
         if feature.split("-")[0] == "EXPANDING":
             if feature.split("-")[1] == "MEAN":
                 expandingMean(df, "High")

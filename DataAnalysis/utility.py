@@ -10,7 +10,11 @@ def stockChange(df, col: str = "High"):
 
 def stockReturn(df, col: str = "CloseUSD"):
     df["RETURN"] = (df[col] / df[col].shift(1)) - 1
-    # df["RETURN"] = df[col].pct_change()
+
+
+def stockComReturn(df):
+    stockReturn(df, "CloseUSD")
+    df["CUMRETURN"] = (1 + df["RETURN"]).cumprod()
 
 
 def rollingMean(df, col: str = "CloseUSD", num: int = 5):

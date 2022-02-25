@@ -1,27 +1,10 @@
-- Grafico delle stock volatility
-https://www.kaggle.com/elakapoor/stock-analysis
-
 - Varie conversioni delle monete
 https://www.kaggle.com/burkepeters/currency-adjustment
-
-
-- Varie info
-https://www.kaggle.com/bryanb/introduction-to-time-series-analysis
-
-
-- da fare daily return in giu
-https://www.kaggle.com/faressayah/stock-market-analysis-prediction-using-lstm
 
 
 - predict
 https://www.kaggle.com/humamfauzi/multiple-stock-prediction-using-single-nn
 
-- standard deviation del return, volatilità
-https://www.kaggle.com/tomasmantero/eda-warren-buffett-us-stock-companies
-
-
--teoria autocorrelazione e altro
-https://www.alpharithms.com/predicting-stock-prices-with-linear-regression-214618/
 
 - covarianza e varianza
 https://www.youtube.com/watch?v=t2Zh-qnFa40&list=PL9ATnizYJ7f9pCPBzr-isv0_R3E6OW6YY&index=5&ab_channel=Algovibes
@@ -55,6 +38,16 @@ La correlazione misura l'estensione di una relazione lineare tra due variabili.
 L'autocorrelazione misura la relazione lineare tra i valori ritardati di una serie temporale, ad esempio tra yt e yt−1.
 Se una serie è significativamente autocorrelata, ciò significa che i valori precedenti della serie (ritardi)
 possono essere utili per prevedere il valore corrente.
+L'analisi di autocorrelazione è utile per identificare tendenze come stagionalità o modelli meteorologici.
+Quando si tratta di estrapolare valori per la previsione dei prezzi, tuttavia, è problematico.
+Il punto è che i nostri valori di data non sono adatti come nostra variabile indipendente e dobbiamo trovare
+qualcos'altro e utilizzare il valore di chiusura rettificato come variabile indipendente. Fortunatamente,
+ci sono alcune ottime opzioni qui.
+Gli indicatori tecnici sono valori calcolati che descrivono i movimenti dei dati storici sui prezzi per titoli come
+azioni, obbligazioni ed ETF. Gli investitori utilizzano queste metriche per prevedere i movimenti delle azioni per
+determinare al meglio quando acquistare, vendere o detenere.
+Gli indicatori tecnici comunemente usati includono le medie mobili (SMA, EMA, MACD), l'indice di forza relativa (RSI),
+le bande di Bollinger (BBANDS) e molti altri. Di certo non mancano gli indicatori tecnici popolari tra cui scegliere.
 
 Le autocorrelazioni parziali misurano la dipendenza lineare di una variabile dopo aver rimosso l'effetto di altre
 variabili che influiscono su entrambe le variabili. Cioè, l'autocorrelazione parziale al ritardo k è l'autocorrelazione

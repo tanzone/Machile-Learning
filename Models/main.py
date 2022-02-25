@@ -118,7 +118,34 @@ def main():
     # adfTest(toTest["CloseUSD"], title='')
 
 
+    # # Plot volatilità delle stock
+    # plotVolatility_bar(groupByIndex(dfProc, takeIndex(dfProc)))
 
+
+    # # Plot heatMap di una stock
+    # stock = "NYA"
+    # plotHeatMap_features(groupByIndex(dfProc, takeIndex(dfProc))[stock])
+
+
+    # # Plot heatMap delle stock tra loro
+    # plotHeatMap_stock(groupByIndex(dfProc, takeIndex(dfProc)), "CloseUSD", "2020-01-01", "2021-01-01")
+
+
+    # # Plot joint delle stock a due a due
+    # plotJoint(groupByIndex(dfProc, takeIndex(dfProc)), "NYA", "NYA", "CloseUSD", "2020-01-01", "2021-01-01")
+    # plotJoint(groupByIndex(dfProc, takeIndex(dfProc)), "NYA", "HSI", "CloseUSD", "2020-01-01", "2021-01-01")
+
+
+    # # Plot pair tra tutte le stocks
+    # plotPair(groupByIndex(dfProc, takeIndex(dfProc)), "CloseUSD", "2020-01-01", "2021-01-01")
+
+
+    # # Plot dettagli
+    # plotDetails(groupByIndex(dfProc, takeIndex(dfProc)), "CloseUSD", "2020-01-01", "2021-01-01")
+
+
+    # # Plot Risk per stocks
+    plotRisk(groupByIndex(dfProc, takeIndex(dfProc)), "CloseUSD", "2020-01-01", "2021-01-01")
 
 
 if __name__ == "__main__":

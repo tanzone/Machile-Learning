@@ -1,13 +1,15 @@
 import random
+
 from DataAnalysis.utility import *
+
+import pandas as pd
 
 import plotly.graph_objs as go
 import plotly.offline as ply
 import matplotlib.pyplot as plt
 
-import pandas as pd
+import seaborn as sns
 
-plt.style.use("fivethirtyeight")
 
 # Costante di colori per i plot
 COLOR_LINE = "purple"
@@ -107,6 +109,31 @@ def plotStocksReturn_matlib_bar(datasets):
         i += 1
 
     plt.show()
+
+
+def plotRisk(datasets, feature: str = "CloseUSD", dateStart=DATE_START, dateEnd=DATE_END):
+    dfPlot = []
+    for key in datasets:
+        df = datasets[key]
+        df = df.loc[(df["Date"] > dateStart) & (df["Date"] <= dateEnd)]
+        addFeatures(df, [feature])
+        df = df.rename(columns={feature: key})
+        dfPlot.append(df[[key]])
+
+    dfPlot = pd.concat(dfPlot, axis=1)
+    area = np.pi * 20
+
+    plt.figure(figsize=(10, 7))
+    plt.scatter(dfPlot.mean(), dfPlot.std(), s=area)
+    plt.xlabel('Expected return')
+    plt.ylabel('Risk')
+
+    for label, x, y in zip(dfPlot.columns, dfPlot.mean(), dfPlot.std()):
+        plt.annotate(label, xy=(x, y), xytext=(50, 50), textcoords='offset points', ha='right', va='bottom',
+                     arrowprops=dict(arrowstyle='-', color='blue', connectionstyle='arc3,rad=-0.3'))
+
+    plt.show()
+
 
 ########################################################################################################################
 # PLOTLY
@@ -242,3 +269,89 @@ def plotCandlestick(df, name: str = "CandlestickTemp", dateStart=DATE_START, dat
     data = go.Candlestick(x=df.Date, open=df.Open, high=df.High, low=df.Low, close=df.CloseUSD)
 
     _plotly(title, name, "Date", "CloseUSD", data)
+
+
+def plotVolatility(datasets, name: str = "VolatilityBarTemp"):
+    data = go.Figure()
+    for key in datasets:
+        df = datasets[key]
+        stockReturn(df, "CloseUSD")
+        data.add_trace(go.Histogram(x=df["RETURN"], name=key))
+
+    # show
+    _plotly("Stock Volatility", name, "Return", "Value", data)
+
+
+
+
+########################################################################################################################
+# SEABORN
+########################################################################################################################
+def plotHeatMap_features(df):
+    sns.heatmap(df.corr(), annot=True, cmap='summer')
+    plt.show()
+
+
+def plotHeatMap_stock(datasets, col: str = "CloseUSD", dateStart=DATE_START, dateEnd=DATE_END):
+    dfPlot = []
+    for key in datasets:
+        df = datasets[key]
+        df = df.loc[(df["Date"] > dateStart) & (df["Date"] <= dateEnd)]
+        addFeatures(df, [col])
+        df = df.rename(columns={col: key})
+        dfPlot.append(df[[key]])
+
+    dfPlot = pd.concat(dfPlot, axis=1)
+    plotHeatMap_features(dfPlot)
+
+
+def plotJoint(datasets, colX, colY, feature: str = "CloseUSD", dateStart=DATE_START, dateEnd=DATE_END):
+    dfPlot = []
+    for key in datasets:
+        df = datasets[key]
+        df = df.loc[(df["Date"] > dateStart) & (df["Date"] <= dateEnd)]
+        addFeatures(df, [feature])
+        df = df.rename(columns={feature: key})
+        dfPlot.append(df[[key]])
+
+    dfPlot = pd.concat(dfPlot, axis=1)
+    sns.jointplot(x=colX, y=colY, data=dfPlot, kind='scatter')
+    plt.show()
+
+
+def plotPair(datasets, feature: str = "CloseUSD", dateStart=DATE_START, dateEnd=DATE_END):
+    dfPlot = []
+    for key in datasets:
+        if not key in ["N100", "NSEI", "IXIC", "SSMI", "J203.JO", "GSPTSE"]:
+            df = datasets[key]
+            df = df.loc[(df["Date"] > dateStart) & (df["Date"] <= dateEnd)]
+            addFeatures(df, [feature])
+            df = df.rename(columns={feature: key})
+            dfPlot.append(df[[key]])
+
+    dfPlot = pd.concat(dfPlot, axis=1)
+    sns.pairplot(dfPlot, kind='reg')
+    plt.show()
+
+
+def plotDetails(datasets, feature: str = "CloseUSD", dateStart=DATE_START, dateEnd=DATE_END):
+    dfPlot = []
+    for key in datasets:
+        if not key in ["N100", "NSEI", "IXIC", "SSMI", "J203.JO", "GSPTSE"]:
+            df = datasets[key]
+            df = df.loc[(df["Date"] > dateStart) & (df["Date"] <= dateEnd)]
+            addFeatures(df, [feature])
+            df = df.rename(columns={feature: key})
+            dfPlot.append(df[[key]])
+
+    dfPlot = pd.concat(dfPlot, axis=1)
+
+    returns_fig = sns.PairGrid(dfPlot)
+    returns_fig.map_upper(plt.scatter, color='purple')
+    returns_fig.map_lower(sns.kdeplot, cmap='cool_d')
+    returns_fig.map_diag(plt.hist, bins=30)
+
+    plt.show()
+
+
+

@@ -3,17 +3,17 @@ import pandas as pd
 from statsmodels.tsa.stattools import adfuller
 
 
-def stockChange(df, col: str = "High"):
-    df["CHANGE"] = df["CloseUSD"].pct_change()
-    # df["CHANGE"] = df[col].div(df[col].shift())
+# change percentuale calcolato su un periodo
+def rollingChange(df, col: str = "High", num: int = 30):
+    df["CHANGE"] = df["CloseUSD"].pct_change(periods = num)
 
 
-def stockReturn(df, col: str = "CloseUSD"):
+def rollingReturn(df, col: str = "CloseUSD", num: int = 30):
     df["RETURN"] = (df[col] / df[col].shift(1)) - 1
 
 
 def stockCumReturn(df):
-    stockReturn(df, "CloseUSD")
+    rollingReturn(df, "CloseUSD")
     df["CUMRETURN"] = (1 + df["RETURN"]).cumprod()
 
 
@@ -126,7 +126,7 @@ def addFeatures(df, features):
         if feature.split("-")[0] == "SELL":
             sellTime(df, "CloseUSD", "SMA-" + feature.split("-")[1], "Open")
         if feature.split("-")[0] == "CHANGE":
-            stockChange(df, "High", int(feature.split("-")[1]))
+            rollingChange(df, "High", int(feature.split("-")[1]))
         if feature.split("-")[0] == "EXPANDING":
             if feature.split("-")[1] == "MEAN":
                 expandingMean(df, "High")

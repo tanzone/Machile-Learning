@@ -6,9 +6,16 @@ from DataAnalysis.plot import *
 
 
 def main():
-    dfData = pd.read_csv("Dataset/indexData.csv")
-    dfInfo = pd.read_csv("Dataset/indexInfo.csv")
-    dfProc = pd.read_csv("Dataset/indexProcessed.csv")
+    dfData = pd.read_csv("../Dataset/indexData.csv")
+    dfInfo = pd.read_csv("../Dataset/indexInfo.csv")
+    dfProc = pd.read_csv("../Dataset/indexProcessed.csv")
+
+    rollingChange(dfProc, "CloseUSD", 1)
+    rollingReturn(dfProc, "CloseUSD", 1)
+
+    print(dfProc[["CHANGE"]].head(10))
+    #print(dfProc[["RETURN"]].head(10))
+
 
     # # info sui dataset
     # info(dfData, dfInfo, dfProc)

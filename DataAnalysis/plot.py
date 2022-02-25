@@ -80,7 +80,7 @@ def plotStocksReturn_matlib(datasets):
         if i == 5:
             continue
         df = datasets[key]
-        stockReturn(df)
+        rollingReturn(df)
         df = df.loc[(df["Date"] > "2020-01-01") & (df["Date"] <= "2021-01-01")]
         plt.subplot(2, 2, i)
         plt.plot(df["Date"], df["RETURN"], marker='o')
@@ -99,7 +99,7 @@ def plotStocksReturn_matlib_bar(datasets):
         if i == 5:
             continue
         df = datasets[key]
-        stockReturn(df)
+        rollingReturn(df)
         df = df.loc[(df["Date"] > "2020-01-01") & (df["Date"] <= "2021-01-01")]
         plt.subplot(2, 2, i)
         df["RETURN"].hist(bins=50)
@@ -275,7 +275,7 @@ def plotVolatility(datasets, col: str = "RETURN", name: str = "VolatilityBarTemp
     data = go.Figure()
     for key in datasets:
         df = datasets[key]
-        stockReturn(df, "CloseUSD")
+        rollingReturn(df, "CloseUSD")
         data.add_trace(go.Histogram(x=df[col], name=key))
 
     # show
@@ -287,7 +287,7 @@ def plotOutliers(datasets, col: str = "CloseUSD", name: str = "Outliers", dateSt
     for key in datasets:
         df = datasets[key]
         df = df.loc[(df["Date"] > dateStart) & (df["Date"] <= dateEnd)]
-        stockReturn(df, "CloseUSD")
+        rollingReturn(df, "CloseUSD")
         data.add_trace(go.Box(x=df[col], name=key))
 
     # show

@@ -12,7 +12,7 @@ import seaborn as sns
 
 
 # Costante di colori per i plot
-COLOR_LINE =  ["purple", "Blue"]
+COLOR_LINE = ["purple"]
 COLORS = []
 for i in range(30):
     COLORS.append('#%06X' % random.randint(0, 0xFFFFFF))
@@ -73,17 +73,17 @@ def plotStocksTrend_matlib(datasets, cols=None):
     plt.show()
 
 
-def plotStocksReturn_matlib(datasets):
+def plotStocksReturn_matlib(datasets, num: int = 1):
     i = 1
     for key in datasets:
         # Ne stampo 4 e basta per provare solo visivamente, non sono interessato ad una visualizzazione totale
         if i == 5:
             continue
         df = datasets[key]
-        rollingReturn(df)
+        rollingChange(df, "CloseUSD", num)
         df = df.loc[(df["Date"] > "2020-01-01") & (df["Date"] <= "2021-01-01")]
         plt.subplot(2, 2, i)
-        plt.plot(df["Date"], df["RETURN"], marker='o')
+        plt.plot(df["Date"], df["CHANGE-" + str(num)], marker='o')
         plt.ylabel("Return")
         plt.xlabel(None)
         plt.title(f"Daily return of {key}")
@@ -92,17 +92,17 @@ def plotStocksReturn_matlib(datasets):
     plt.show()
 
 
-def plotStocksReturn_matlib_bar(datasets):
+def plotStocksReturn_matlib_bar(datasets, num: int = 1):
     i = 1
     for key in datasets:
         # Ne stampo 4 e basta per provare solo visivamente, non sono interessato ad una visualizzazione totale
         if i == 5:
             continue
         df = datasets[key]
-        rollingReturn(df)
+        rollingChange(df, "CloseUSD", num)
         df = df.loc[(df["Date"] > "2020-01-01") & (df["Date"] <= "2021-01-01")]
         plt.subplot(2, 2, i)
-        df["RETURN"].hist(bins=50)
+        df["CHANGE-" + str(num)].hist(bins=50)
         plt.ylabel("Daily Return")
         plt.xlabel(None)
         plt.title(f"Daily return of {key}")
@@ -144,8 +144,10 @@ def _plotly(title, name, colX, colY, data):
     ply.plot(fig, filename="../Plots/" + name + ".html")
 
 
-def plotSomething_line(df, colX: str = "Date", colY: str = "CloseUSD", name: str = "temp", color=COLOR_LINE,
+def plotSomething_line(df, colX: str = "Date", colY: str = "CloseUSD", name: str = "temp", color=None,
                        loop: bool = False):
+    if color is None:
+        color = COLOR_LINE[:]
     x = df[colX].tolist()
     y = df[colY].tolist()
 
@@ -159,8 +161,10 @@ def plotSomething_line(df, colX: str = "Date", colY: str = "CloseUSD", name: str
         return data
 
 
-def plotSomething_dash(df, colX: str = "Date", colY: str = "CloseUSD", name: str = "temp", color=COLOR_LINE,
+def plotSomething_dash(df, colX: str = "Date", colY: str = "CloseUSD", name: str = "temp", color=None,
                        loop: bool = False):
+    if color is None:
+        color = COLOR_LINE[:]
     x = df[colX].tolist()
     y = df[colY].tolist()
 
@@ -175,8 +179,10 @@ def plotSomething_dash(df, colX: str = "Date", colY: str = "CloseUSD", name: str
         return data
 
 
-def plotSomething_marker(df, colX: str = "Date", colY: str = "CloseUSD", name: str = "temp", color=COLOR_LINE,
+def plotSomething_marker(df, colX: str = "Date", colY: str = "CloseUSD", name: str = "temp", color=None,
                          loop: bool = False):
+    if color is None:
+        color = COLOR_LINE[:]
     x = df[colX].tolist()
     y = df[colY].tolist()
 
@@ -191,7 +197,9 @@ def plotSomething_marker(df, colX: str = "Date", colY: str = "CloseUSD", name: s
         return data
 
 
-def plotMultiple_line(datasets, colX: str = "Date", colY: str = "CloseUSD", name: str = "temp", color=COLORS):
+def plotMultiple_line(datasets, colX: str = "Date", colY: str = "CloseUSD", name: str = "temp", color=None):
+    if color is None:
+        color = COLORS[:]
     data = list()
     for key in datasets:
         df = datasets[key]
@@ -232,10 +240,10 @@ def plotStockFeatures(df, colX: str = "Date", colY: str = "CloseUSD", cols=None,
 
     # plot della stock
     title = "Plot {} on: {} - {}".format(name, colX, colY)
-    color = COLORS
+    color = COLORS[:]
 
     data = list()
-    data.append(plotSomething_line(df, colX, colY, name, COLOR_LINE, True))
+    data.append(plotSomething_line(df, colX, colY, name, COLOR_LINE[:], True))
 
     # plot delle features
     for col in cols:
@@ -271,11 +279,11 @@ def plotCandlestick(df, name: str = "CandlestickTemp", dateStart=DATE_START, dat
     _plotly(title, name, "Date", "CloseUSD", data)
 
 
-def plotVolatility(datasets, col: str = "RETURN", name: str = "VolatilityBarTemp"):
+def plotVolatility(datasets, col: str = "CHANGE-1", name: str = "VolatilityBarTemp"):
     data = go.Figure()
     for key in datasets:
         df = datasets[key]
-        rollingReturn(df, "CloseUSD")
+        addFeatures(df, [col])
         data.add_trace(go.Histogram(x=df[col], name=key))
 
     # show
@@ -287,7 +295,7 @@ def plotOutliers(datasets, col: str = "CloseUSD", name: str = "Outliers", dateSt
     for key in datasets:
         df = datasets[key]
         df = df.loc[(df["Date"] > dateStart) & (df["Date"] <= dateEnd)]
-        rollingReturn(df, "CloseUSD")
+        addFeatures(df, [col])
         data.add_trace(go.Box(x=df[col], name=key))
 
     # show

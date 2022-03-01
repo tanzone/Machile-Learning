@@ -102,3 +102,14 @@ def timeStampToDate_list(array):
 
     return dateList
 
+
+def manipulateDf(df, modify):
+    colDrop, dateStart, dateEnd = modify
+    # Tolgo colonne che non voglio vendano prese dal machine learning
+    df = df.drop(columns=colDrop)
+    # Limitazione sulle date
+    df = df.loc[(df["Date"] > dateStart) & (df["Date"] <= dateEnd)]
+    # Trasformo la data da stringa a datetime cosicchè possa essere elaborata
+    dateToTimeStamp(df)
+
+    return df

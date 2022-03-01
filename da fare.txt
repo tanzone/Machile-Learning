@@ -5,6 +5,9 @@ https://www.kaggle.com/humamfauzi/multiple-stock-prediction-using-single-nn
 -standardizzare e normalizzare solo le colonne x
  *****la y non si tocca.***
 
+-Fare i grid search e random e blah blah
+- features kbest
+
 -Varie Info
 
 Cosa descrive la migliore stazionarietà?

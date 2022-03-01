@@ -48,34 +48,31 @@ MODELS[MODEL_2] = {"Active": False,  "splitType": SPLIT_FINAL_DAYS, "size": 0.0,
 MODELS[MODEL_3] = {"Active": False,  "splitType": SPLIT_FINAL_DAYS, "size": 0.0,
                    "preType": PRETYPE_MINMAX, "bestType": False, "crossType": False}
 
-MODELS[MODEL_4] = {"Active": True,  "splitType": SPLIT_FINAL_DAYS, "size": 0.0,
-                   "preType": PRETYPE_FALSE, "bestType": False, "crossType": False,
+MODELS[MODEL_4] = {"Active": False,  "splitType": SPLIT_FINAL_DAYS, "size": 0.0,
+                   "preType": PRETYPE_MINMAX, "bestType": False, "crossType": False,
                    "randType": True, "gridType": True}
 
-MODELS[MODEL_5] = {"Active": False,  "splitType": SPLIT_FINAL_DAYS, "size": 0.0,
-                   "preType": PRETYPE_FALSE, "bestType": False, "crossType": False,
+MODELS[MODEL_5] = {"Active": True,  "splitType": SPLIT_FINAL_DAYS, "size": 0.0,
+                   "preType": PRETYPE_MINMAX, "bestType": False, "crossType": False,
                    "randType": True, "gridType": True}
 
 MODELS[MODEL_6] = {"Active": False,  "splitType": SPLIT_FINAL_DAYS, "size": 0.0,
-                   "preType": PRETYPE_FALSE, "bestType": False, "crossType": False,
+                   "preType": PRETYPE_MINMAX, "bestType": False, "crossType": False,
                    "randType": True, "gridType": True}
 
 
-
-
-RANDOM_FOREST_REGRESSION_SPACE = {"n_estimators": [int(x) for x in np.linspace(start=1, stop=200, num=15)],
+RANDOM_FOREST_REGRESSION_SPACE = {"n_estimators": [int(x) for x in np.linspace(start=50, stop=300, num=20)],
                                   "max_features": ["auto", "sqrt"], "bootstrap": [True, False],
-                                  "max_depth": [int(x) for x in np.linspace(10, 110, num=11)],
+                                  "max_depth": [int(x) for x in np.linspace(1, 111, num=11)],
                                   "min_samples_split": [2, 5, 10], "min_samples_leaf": [1, 2, 4]}
 
-
-ADABOOST_REGRESSION_SPACE = {"n_estimators": [int(x) for x in np.linspace(start=0, stop=201, num=50)],
-                             "learning_rate": [float(x/100) for x in np.linspace(start=0, stop=20, num=3)],
+ADABOOST_REGRESSION_SPACE = {"n_estimators": [int(x) for x in np.linspace(start=1, stop=401, num=40)],
+                             "learning_rate": [float(x/100) for x in np.linspace(start=1, stop=20, num=2)],
                              "loss": ["linear", "square", "exponential"]}
 
-GRADIENTBOOST_REGRESSION_SPACE = {"n_estimators": [int(x) for x in np.linspace(start=0, stop=201, num=50)],
-                                  "learning_rate": [float(x/100) for x in np.linspace(start=0, stop=20, num=3)],
-                                  "criterion": ["friedman_mse", "squared_error", "mse", "mae"]}
+GRADIENTBOOST_REGRESSION_SPACE = {"n_estimators": [int(x) for x in np.linspace(start=1, stop=401, num=40)],
+                                  "learning_rate": [float(x/100) for x in np.linspace(start=1, stop=20, num=2)],
+                                  "criterion": ["friedman_mse"]}
 
 
 # Vari tipi di split
@@ -198,19 +195,34 @@ def _randSearch(model, X_train, y_train, space, run=True):
         print("Best Score: ".ljust(25) + "%s" % best_score)
         print("Best Hyperparameters: ".ljust(25) + "%s" % best_params)
 
+        return best_params
+
+
+def _bestParameters(space):
+    for key in space:
+        if isinstance(space[key], int):
+            space[key] = [int(x) for x in np.linspace(start=space[key]-5, stop=space[key]+5, num=1)]
+        else:
+            space[key] = [space[key]]
+
 
 def _gridSearch(model, X_train, y_train, space, run=True):
     if run:
         from sklearn.model_selection import GridSearchCV
         from sklearn.model_selection import RepeatedKFold
+        _bestParameters(space)
         print("   ... Calculating Grid Search ...")
-        cv = RepeatedKFold(n_splits=10, n_repeats=10, random_state=27)
-        search = GridSearchCV(model, space, scoring="neg_mean_absolute_error", n_jobs=6, cv=cv)
+        # cv = RepeatedKFold(n_splits=10, n_repeats=3, random_state=27)
+        cv = 3
+        search = GridSearchCV(model, space, scoring="neg_mean_absolute_error", n_jobs=-1, cv=cv)
         search.fit(X_train, y_train)
         best_score, best_params = search.best_score_, search.best_params_
 
         print("Best Score: ".ljust(25) + "%s" % best_score)
         print("Best Hyperparameters: ".ljust(25) + "%s" % best_params)
+        print("------------------------------------------")
+
+        return best_params
 
 
 # TODO verificare che ci siano tutti

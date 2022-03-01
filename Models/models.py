@@ -1,7 +1,6 @@
 from Models.utilityML import *
 
 
-# TODO hyper param
 # modello regressione lineare semplice
 def model_linearRegression(name, df, splitType=SPLIT_FINAL_SIZE, size=0.20, preType=PRETYPE_FALSE,
                            bestType=True, crossType=True):
@@ -28,7 +27,6 @@ def model_linearRegression(name, df, splitType=SPLIT_FINAL_SIZE, size=0.20, preT
     return X_train, y_train, X_test, y_test, y_pred, rmse
 
 
-# TODO hyper param
 # modello polinomiale con regressione lineare
 def model_polyRegression(name, df, splitType=SPLIT_FINAL_SIZE, size=0.20, preType=PRETYPE_FALSE,
                          bestType=True, crossType=True, num=2):
@@ -61,7 +59,6 @@ def model_polyRegression(name, df, splitType=SPLIT_FINAL_SIZE, size=0.20, preTyp
     return X_train, y_train, X_test, y_test, y_pred, rmse
 
 
-# TODO hyper param
 # modello di regressione logistica
 def model_logisticRegression(name, df, splitType=SPLIT_FINAL_SIZE, size=0.20, preType=PRETYPE_FALSE,
                              bestType=True, crossType=True):
@@ -95,7 +92,6 @@ def model_logisticRegression(name, df, splitType=SPLIT_FINAL_SIZE, size=0.20, pr
     return X_train, y_train, X_test, y_test, y_pred, rmse
 
 
-# TODO hyper param
 def model_randomForest(name, df, splitType=SPLIT_FINAL_SIZE, size=0.20, preType=PRETYPE_FALSE,
                        bestType=True, crossType=True, randType=True, gridType=True):
     from Models.utilityML import _split, _preProcessing, _paramsErrors, _postProcessing, _bestFeatures, \
@@ -109,12 +105,13 @@ def model_randomForest(name, df, splitType=SPLIT_FINAL_SIZE, size=0.20, preType=
     # PreProcessing
     X_train, X_test, scaler = _preProcessing(X_train[:], X_test[:], preType)
     # Cross Validation
-    _crossValidation(RandomForestRegressor(n_estimators=10), X_train, y_train, name, KFOLD_NUM, crossType)
+    _crossValidation(RandomForestRegressor(n_estimators=100), X_train, y_train, name, KFOLD_NUM, crossType)
     # Random e Grid Search
-    _randSearch(RandomForestRegressor(), X_train, y_train.values.reshape(-1, ), RANDOM_FOREST_REGRESSION_SPACE, randType)
-    _gridSearch(RandomForestRegressor(), X_train, y_train.values.reshape(-1, ), RANDOM_FOREST_REGRESSION_SPACE, gridType)
+    # best =
+    best = _randSearch(RandomForestRegressor(), X_train, y_train.values.reshape(-1, ), RANDOM_FOREST_REGRESSION_SPACE, randType)
+    best = _gridSearch(RandomForestRegressor(), X_train, y_train.values.reshape(-1, ), best, gridType)
     # Learning
-    model = RandomForestRegressor(n_estimators=10)
+    model = RandomForestRegressor(best)
     model.fit(X_train, y_train.values.reshape(-1,))
     y_pred = model.predict(X_test)
     rmse = _paramsErrors(model, X_train, y_train.values.reshape(-1, ), y_test, y_pred, name)
@@ -122,7 +119,6 @@ def model_randomForest(name, df, splitType=SPLIT_FINAL_SIZE, size=0.20, preType=
     X_train, X_test = _postProcessing(X_train[:], X_test[:], scaler, xCols, preType)
 
     return X_train, y_train, X_test, y_test, y_pred, rmse
-
 
 
 def model_adaBoostRegression(name, df, splitType=SPLIT_FINAL_SIZE, size=0.20, preType=PRETYPE_FALSE,
@@ -140,10 +136,11 @@ def model_adaBoostRegression(name, df, splitType=SPLIT_FINAL_SIZE, size=0.20, pr
     # Cross Validation
     _crossValidation(AdaBoostRegressor(), X_train, y_train, name, KFOLD_NUM, crossType)
     # Random e Grid Search
-    _randSearch(AdaBoostRegressor(), X_train, y_train.values.reshape(-1, ), ADABOOST_REGRESSION_SPACE, randType)
-    _gridSearch(AdaBoostRegressor(), X_train, y_train.values.reshape(-1, ), ADABOOST_REGRESSION_SPACE, gridType)
+    # best =
+    best = _randSearch(AdaBoostRegressor(), X_train, y_train.values.reshape(-1, ), ADABOOST_REGRESSION_SPACE, randType)
+    best = _gridSearch(AdaBoostRegressor(), X_train, y_train.values.reshape(-1, ), best, gridType)
     # Learning
-    model = AdaBoostRegressor()
+    model = AdaBoostRegressor(**best)
     model.fit(X_train, y_train.values.reshape(-1,))
     y_pred = model.predict(X_test)
     rmse = _paramsErrors(model, X_train, y_train.values.reshape(-1, ), y_test, y_pred, name)
@@ -168,10 +165,11 @@ def model_gradientBoostRegression(name, df, splitType=SPLIT_FINAL_SIZE, size=0.2
     # Cross Validation
     _crossValidation(GradientBoostingRegressor(), X_train, y_train, name, KFOLD_NUM, crossType)
     # Random e Grid Search
-    _randSearch(GradientBoostingRegressor(), X_train, y_train.values.reshape(-1, ), GRADIENTBOOST_REGRESSION_SPACE, randType)
-    _gridSearch(GradientBoostingRegressor(), X_train, y_train.values.reshape(-1, ), GRADIENTBOOST_REGRESSION_SPACE, gridType)
+    # best =
+    best = _randSearch(GradientBoostingRegressor(), X_train, y_train.values.reshape(-1, ), GRADIENTBOOST_REGRESSION_SPACE, randType)
+    best = _gridSearch(GradientBoostingRegressor(), X_train, y_train.values.reshape(-1, ), best, gridType)
     # Learning
-    model = GradientBoostingRegressor()
+    model = GradientBoostingRegressor(**best)
     model.fit(X_train, y_train.values.reshape(-1,))
     y_pred = model.predict(X_test)
     rmse = _paramsErrors(model, X_train, y_train.values.reshape(-1, ), y_test, y_pred, name)

@@ -1,5 +1,5 @@
 from DataAnalysis.basic import groupByIndex, takeIndex, changeValue, manipulateDf
-from Models.utilityML import *
+from Models.models import *
 
 
 def _modelUser(df, modify, models=MODELS, plotPlotly=False):
@@ -103,6 +103,5 @@ def main():
     _R_Manual(df, MODIFY_ALL_YEAR, MODELS, True)
 
 
-
-
-main()
+if __name__ == "__main__":
+    main()

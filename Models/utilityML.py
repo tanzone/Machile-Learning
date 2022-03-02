@@ -52,23 +52,30 @@ MODELS[MODEL_4] = {"Active": False,  "splitType": SPLIT_FINAL_DAYS, "size": 0.0,
                    "preType": PRETYPE_MINMAX, "bestType": False, "crossType": False,
                    "randType": True, "gridType": True}
 
-MODELS[MODEL_5] = {"Active": True,  "splitType": SPLIT_FINAL_DAYS, "size": 0.0,
+MODELS[MODEL_5] = {"Active": False,  "splitType": SPLIT_FINAL_DAYS, "size": 0.0,
                    "preType": PRETYPE_MINMAX, "bestType": False, "crossType": False,
                    "randType": True, "gridType": True}
 
-MODELS[MODEL_6] = {"Active": False,  "splitType": SPLIT_FINAL_DAYS, "size": 0.0,
+MODELS[MODEL_6] = {"Active": True,  "splitType": SPLIT_FINAL_DAYS, "size": 0.0,
                    "preType": PRETYPE_MINMAX, "bestType": False, "crossType": False,
                    "randType": True, "gridType": True}
 
+
+BEST_RANDOM_FOREST = {'n_estimators': 300, 'min_samples_split': 0.01, 'min_samples_leaf': 0.01, 'max_features': 'auto', 'max_depth': 45, 'bootstrap': True}
 
 RANDOM_FOREST_REGRESSION_SPACE = {"n_estimators": [int(x) for x in np.linspace(start=50, stop=300, num=20)],
                                   "max_features": ["auto", "sqrt"], "bootstrap": [True, False],
                                   "max_depth": [int(x) for x in np.linspace(1, 111, num=11)],
-                                  "min_samples_split": [2, 5, 10], "min_samples_leaf": [1, 2, 4]}
+                                  "min_samples_split": [float(x/100) for x in np.linspace(start=1, stop=99, num=8)],
+                                  "min_samples_leaf": [float(x/100) for x in np.linspace(start=1, stop=49, num=4)]}
+
+BEST_ADABOOST = {'n_estimators': 390, 'loss': 'exponential', 'learning_rate': 0.2}
 
 ADABOOST_REGRESSION_SPACE = {"n_estimators": [int(x) for x in np.linspace(start=1, stop=401, num=40)],
                              "learning_rate": [float(x/100) for x in np.linspace(start=1, stop=20, num=2)],
                              "loss": ["linear", "square", "exponential"]}
+
+BEST_GRADIENTBOOST = {'n_estimators': 83, 'learning_rate': 0.2, 'criterion': 'friedman_mse'}
 
 GRADIENTBOOST_REGRESSION_SPACE = {"n_estimators": [int(x) for x in np.linspace(start=1, stop=401, num=40)],
                                   "learning_rate": [float(x/100) for x in np.linspace(start=1, stop=20, num=2)],
@@ -181,8 +188,7 @@ def _crossValidation(modelCrossing, X_train, y_train, name, numK=10, doIt=True):
         print("------------------------------------------")
 
 
-# space["min_samples_split"]  = [int(x)+1 for x in np.linspace(start = 1, stop = 30, num = 2)]
-def _randSearch(model, X_train, y_train, space, run=True):
+def _randSearch(model, X_train, y_train, space, run=True, best=None):
     if run:
         from sklearn.model_selection import RandomizedSearchCV
         from sklearn.model_selection import RepeatedKFold
@@ -196,6 +202,7 @@ def _randSearch(model, X_train, y_train, space, run=True):
         print("Best Hyperparameters: ".ljust(25) + "%s" % best_params)
 
         return best_params
+    return best
 
 
 def _bestParameters(space):
@@ -223,6 +230,7 @@ def _gridSearch(model, X_train, y_train, space, run=True):
         print("------------------------------------------")
 
         return best_params
+    return space
 
 
 # TODO verificare che ci siano tutti

@@ -125,7 +125,7 @@ def main():
     _R_SplitDays(df, False) #Quello più corretto
 
     # # REGRESSIONE MANUALE COI SETTAGGI CHE SI DESIDERANO # #
-    _R_Manual(df, True, MODIFY_ALL_YEAR, MODELS)
+    _R_Manual(df, True, MODIFY_WASTE_YEAR, MODELS)
 
 
 

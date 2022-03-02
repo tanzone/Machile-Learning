@@ -107,11 +107,11 @@ def model_randomForest(name, df, splitType=SPLIT_FINAL_SIZE, size=0.20, preType=
     # Cross Validation
     _crossValidation(RandomForestRegressor(n_estimators=100), X_train, y_train, name, KFOLD_NUM, crossType)
     # Random e Grid Search
-    # best =
-    best = _randSearch(RandomForestRegressor(), X_train, y_train.values.reshape(-1, ), RANDOM_FOREST_REGRESSION_SPACE, randType)
+    best = BEST_RANDOM_FOREST
+    best = _randSearch(RandomForestRegressor(), X_train, y_train.values.reshape(-1, ), RANDOM_FOREST_REGRESSION_SPACE, randType, best)
     best = _gridSearch(RandomForestRegressor(), X_train, y_train.values.reshape(-1, ), best, gridType)
     # Learning
-    model = RandomForestRegressor(best)
+    model = RandomForestRegressor(**best)
     model.fit(X_train, y_train.values.reshape(-1,))
     y_pred = model.predict(X_test)
     rmse = _paramsErrors(model, X_train, y_train.values.reshape(-1, ), y_test, y_pred, name)
@@ -136,8 +136,8 @@ def model_adaBoostRegression(name, df, splitType=SPLIT_FINAL_SIZE, size=0.20, pr
     # Cross Validation
     _crossValidation(AdaBoostRegressor(), X_train, y_train, name, KFOLD_NUM, crossType)
     # Random e Grid Search
-    # best =
-    best = _randSearch(AdaBoostRegressor(), X_train, y_train.values.reshape(-1, ), ADABOOST_REGRESSION_SPACE, randType)
+    best = BEST_ADABOOST
+    best = _randSearch(AdaBoostRegressor(), X_train, y_train.values.reshape(-1, ), ADABOOST_REGRESSION_SPACE, randType, best)
     best = _gridSearch(AdaBoostRegressor(), X_train, y_train.values.reshape(-1, ), best, gridType)
     # Learning
     model = AdaBoostRegressor(**best)
@@ -165,8 +165,8 @@ def model_gradientBoostRegression(name, df, splitType=SPLIT_FINAL_SIZE, size=0.2
     # Cross Validation
     _crossValidation(GradientBoostingRegressor(), X_train, y_train, name, KFOLD_NUM, crossType)
     # Random e Grid Search
-    # best =
-    best = _randSearch(GradientBoostingRegressor(), X_train, y_train.values.reshape(-1, ), GRADIENTBOOST_REGRESSION_SPACE, randType)
+    best = BEST_GRADIENTBOOST
+    best = _randSearch(GradientBoostingRegressor(), X_train, y_train.values.reshape(-1, ), GRADIENTBOOST_REGRESSION_SPACE, randType, best)
     best = _gridSearch(GradientBoostingRegressor(), X_train, y_train.values.reshape(-1, ), best, gridType)
     # Learning
     model = GradientBoostingRegressor(**best)
@@ -177,3 +177,13 @@ def model_gradientBoostRegression(name, df, splitType=SPLIT_FINAL_SIZE, size=0.2
     X_train, X_test = _postProcessing(X_train[:], X_test[:], scaler, xCols, preType)
 
     return X_train, y_train, X_test, y_test, y_pred, rmse
+
+
+#TODO
+def model_ridgeRegression():
+    pass
+
+
+#TODO
+def model_neuralNetwork():
+    pass

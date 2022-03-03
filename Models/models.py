@@ -446,7 +446,6 @@ def model_neuralNetwork(name, df, splitType=SPLIT_FINAL_SIZE, size=0.20, preType
     return X_train, y_train, X_test, y_test, y_pred, rmse
 
 
-# TODO da provare
 def model_neuralNetwork_LSTM(name, df, splitType=SPLIT_FINAL_SIZE, size=0.20, preType=PRETYPE_FALSE,
                              bestType=True, crossType=True, randType=True, gridType=True):
     from keras.models import Sequential

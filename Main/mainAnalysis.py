@@ -9,7 +9,6 @@ def main():
     dfInfo = pd.read_csv("../Dataset/indexInfo.csv")
     dfProc = pd.read_csv("../Dataset/indexProcessed.csv")
 
-
     # # info sui dataset
     # info(dfData, dfInfo, dfProc)
     # controlValues(dfData, dfInfo, dfProc)
@@ -32,6 +31,11 @@ def main():
     #
     # # Utilizzo i dataset splittati per creare file csv ognuno per ogni stock
     # writeCsv_Index(groupByIndex(dfProc, takeIndex(dfProc)))
+    #
+    #
+    # # Pandas Profiling
+    # stock = "HSI"
+    # pandasProfilingHelp(groupByIndex(dfProc, takeIndex(dfProc))[stock], stock)
     #
     #
     # # Plot a torta della percentuale di indici che compaiono nel dataset

@@ -15,6 +15,11 @@ def info(*datasets):
         print("------------------------------------------\n")
 
 
+def pandasProfilingHelp(df, name):
+    from pandas_profiling import ProfileReport
+    print(ProfileReport(df, title="Report of " + name))
+    print("------------------------------------------\n")
+
 def controlValues(*datasets):
     for df in datasets:
         print(df.isnull().any(), end="\n------------------\n")

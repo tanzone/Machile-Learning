@@ -135,6 +135,28 @@ def plotRisk(datasets, feature: str = "CloseUSD", dateStart=DATE_START, dateEnd=
     plt.show()
 
 
+def plotCaso(df, infoModel, name, plotTrain: bool = True):
+    if plotTrain:
+        plt.plot(df.Date, df.Close, label="Real")
+
+        plotX, plotY = zip(*sorted(zip(infoModel[0].Date, infoModel[1].Close)))
+        plt.scatter(plotX, plotY, label="Real-Train")
+
+        plotX, plotY = zip(*sorted(zip(infoModel[2].Date, infoModel[3].Close)))
+        plt.scatter(plotX, plotY, label="Real-Test")
+
+    if not plotTrain:
+        plotX, plotY = zip(*sorted(zip(infoModel[2].Date, infoModel[3].Close)))
+        plt.plot(plotX, plotY, label="Real-Test")
+
+    plotX, plotY = zip(*sorted(zip(infoModel[2].Date, infoModel[4])))
+    plt.plot(plotX, plotY, label=name)
+    plt.legend()
+
+    plt.show()
+
+
+
 ########################################################################################################################
 # PLOTLY
 ########################################################################################################################
@@ -159,6 +181,27 @@ def plotSomething_line(df, colX: str = "Date", colY: str = "CloseUSD", name: str
         _plotly(title, name, colX, colY, data)
     else:
         return data
+
+
+def plotModels(df, toPlot, name="modelsTemp"):
+    color = COLORS[:]
+    colX = "Date"
+    colY = "Close"
+    data = list()
+    data.append(plotSomething_line(df, colX, colY, "Real stock trend", color, True))
+
+    for key in toPlot:
+        dfPlot = toPlot[key]
+        # linea di test di riferimento
+        data.append(go.Scatter(x=dfPlot[2].Date, y=dfPlot[3].Close, name=key + " - Test trend",
+                               line=dict(color="yellow", width=4)))
+        # linea predetta
+        data.append(go.Scatter(x=dfPlot[2].Date, y=dfPlot[4], name=key + " - " + str(dfPlot[5]),
+                               line=dict(color=color.pop(random.randint(0, len(color) - 1)), width=4)))
+
+    # show
+    title = "Plot {} on: {} - {}".format(name, colX, colY)
+    _plotly(title, name, colX, colY, data)
 
 
 def plotSomething_dash(df, colX: str = "Date", colY: str = "CloseUSD", name: str = "temp", color=None,

@@ -41,7 +41,7 @@ def _preProcessing(X_train, X_test, preType: str = PRETYPE_MINMAX):
     if preType == PRETYPE_FALSE:
         return X_train, X_test, None
 
-    scaler = scaler = MinMaxScaler(feature_range=(-1, 1))
+    scaler = MinMaxScaler(feature_range=(-1, 1))
     if preType == PRETYPE_MINMAX:
         scaler = MinMaxScaler(feature_range=(0, 1))
 
@@ -156,7 +156,7 @@ def _gridSearch(model, X_train, y_train, space, run=True):
 
 
 # Vari indicatori di validazione per la regressione
-def _paramsErrors(model, X_train, y_train, y_test, y_pred, name, cv=25, scoring="r2"):
+def _paramsErrors(model, X_train, y_train, y_test, y_pred, name, cv=3, scoring="r2"):
     scores = cross_val_score(model, X_train, y_train, cv=cv, scoring=scoring)
     mse = mean_squared_error(y_test, y_pred)
     rmse = sqrt(mse)
@@ -167,6 +167,19 @@ def _paramsErrors(model, X_train, y_train, y_test, y_pred, name, cv=25, scoring=
     print("R2 Score: ".ljust(25), r2Score)
     print("CV Mean: ".ljust(25), np.mean(scores))
     print("STD: ".ljust(25), np.std(scores))
+    print("------------------------------------------")
+
+    return rmse
+
+
+# Vari indicatori di validazione per la logistic regression
+def _paramsErrorsLogic(model, X_train, y_train, y_test, y_pred, name):
+    mse = mean_squared_error(y_test, y_pred)
+    rmse = sqrt(mse)
+    r2Score = r2_score(y_test, y_pred)
+    print("Type of Regression: ".ljust(25) + name)
+    print("MRSE: ".ljust(25) + str(rmse))
+    print("R2 Score: ".ljust(25), r2Score)
     print("------------------------------------------")
 
     return rmse
@@ -263,8 +276,7 @@ def model_logisticRegression(name, df, splitType=SPLIT_FINAL_SIZE, size=0.20, pr
     model = LogisticRegression()
     model.fit(X_train, y_train.values.reshape(-1,))
     y_pred = model.predict(X_test)
-    #TODO da provare e sistemare mettendo un if nella funzione controllando il nome
-    rmse = _paramsErrors(model, X_train, y_train, y_test, y_pred, name)
+    rmse = _paramsErrorsLogic(model, X_train, y_train, y_test, y_pred, name)
     # PostProcessing per multiclass -- >continuo
     y_train = pd.DataFrame(label.inverse_transform(y_train.values.reshape(-1,)), columns=yCols)
     y_pred = label.inverse_transform(y_pred)
@@ -384,6 +396,7 @@ def model_ridgeRegression(name, df, splitType=SPLIT_FINAL_SIZE, size=0.20, preTy
     model.fit(X_train, y_train.values.reshape(-1,))
     y_pred = model.predict(X_test)
     rmse = _paramsErrors(model, X_train, y_train.values.reshape(-1, ), y_test, y_pred, name)
+    print(y_pred)
     # PostProcessing
     X_train, X_test = _postProcessing(X_train[:], X_test[:], scaler, xCols, preType)
 
@@ -423,7 +436,8 @@ def model_neuralNetwork(name, df, splitType=SPLIT_FINAL_SIZE, size=0.20, preType
     # Learning
     model = _createNeural(**best)
     history = model.fit(X_train, y_train, epochs=150, batch_size=50, validation_split=0.2, verbose=1)
-    y_pred = model.predict(X_test, verbose=0)
+    y_pred = model.predict(X_test, verbose=0)[:,0]
+    print(y_pred)
     test_loss_score, test_mse_score = model.evaluate(X_test, y_test)
     rmse = _paramsErrorsNeural(y_test, y_pred, name, test_mse_score, test_loss_score)
     # PostProcessing
@@ -436,8 +450,7 @@ def model_neuralNetwork(name, df, splitType=SPLIT_FINAL_SIZE, size=0.20, preType
 def model_neuralNetwork_LSTM(name, df, splitType=SPLIT_FINAL_SIZE, size=0.20, preType=PRETYPE_FALSE,
                              bestType=True, crossType=True, randType=True, gridType=True):
     from keras.models import Sequential
-    from keras.layers import LSTM, Dense
-    from keras.optimizer_v1 import Adam
+    from keras.layers import LSTM, Dense, Dropout
     # Split
     X_train, y_train, X_test, y_test = _split(df[:], splitType, size)
     xCols = X_train.columns
@@ -445,92 +458,56 @@ def model_neuralNetwork_LSTM(name, df, splitType=SPLIT_FINAL_SIZE, size=0.20, pr
     X_train, X_test, scaler = _preProcessing(X_train[:], X_test[:], preType)
     # Learning
     model = Sequential()
-    model.add(LSTM(200, activation='relu', return_sequences=True, input_shape=(X_train.shape[1],)))
-    model.add(LSTM(200, activation='relu', return_sequences=True))
-    model.add(LSTM(200, activation='relu'))
-    model.add(Dense(10, activation='relu'))
-    model.compile(optimizer=Adam(learning_rate=0.0001), loss='mse', metrics=['accuracy'])
-    history = model.fit(X_train, y_train, epochs=150, batch_size=50, validation_split=0.2, verbose=1)
-    y_pred = model.predict(X_test, verbose=0)
-    test_loss_score, test_mse_score = model.evaluate(X_test, y_test)
-    rmse = _paramsErrorsNeural(y_test, y_pred, name, test_mse_score, test_loss_score)
+    model.add(LSTM(units=50, return_sequences=True, input_shape=(X_train.shape[1], 1)))
+    model.add(Dropout(0.2))
+    model.add(LSTM(units=50, return_sequences=True))
+    model.add(Dropout(0.2))
+    model.add(LSTM(units=50, return_sequences=True))
+    model.add(Dropout(0.2))
+    model.add(LSTM(units=50))
+    model.add(Dropout(0.2))
+    model.add(Dense(1))
+    model.compile(optimizer='adam', loss='mean_squared_error')
+    model.fit(X_train, y_train, epochs=100, batch_size=64)
+    y_pred = model.predict(X_test)[:,0]
+    print(y_pred)
+    #rmse = np.sqrt(np.mean(((y_pred - y_test) ** 2)))
+    rmse = "NaN"
     # PostProcessing
     X_train, X_test = _postProcessing(X_train[:], X_test[:], scaler, xCols, preType)
 
     return X_train, y_train, X_test, y_test, y_pred, rmse
 
 
-
-
-
-
-
-
-
-# TODO da metterlo a post e nella giusta cartella
-def plotCaso(df, infoModel, name, plotTrain: bool = True):
-    from matplotlib import pyplot as plt
-
-    if plotTrain:
-        plt.plot(df.Date, df.Close, label="Real")
-
-        plotX, plotY = zip(*sorted(zip(infoModel[0].Date, infoModel[1].Close)))
-        plt.scatter(plotX, plotY, label="Real-Train")
-
-        plotX, plotY = zip(*sorted(zip(infoModel[2].Date, infoModel[3].Close)))
-        plt.scatter(plotX, plotY, label="Real-Test")
-
-    if not plotTrain:
-        plotX, plotY = zip(*sorted(zip(infoModel[2].Date, infoModel[3].Close)))
-        plt.plot(plotX, plotY, label="Real-Test")
-
-    plotX, plotY = zip(*sorted(zip(infoModel[2].Date, infoModel[4])))
-    plt.plot(plotX, plotY, label=name)
-    plt.legend()
-
-    plt.show()
-
-
-# TODO da fare con plotly il grafico della stock e tutti i modelli sovrapposti
-def plotModels(df, toPlot):
-    pass
-
-
-
-
-
-
-
-
 MODELS_BASE = dict()
 MODELS_BASE[MODEL_LINEAR] = {"Active": True, "splitType": SPLIT_FINAL_DAYS, "size": 0.0,
                              "preType": PRETYPE_FALSE, "bestType": True, "crossType": True,
                              "randType": True, "gridType": True,
-                             "func": model_linearRegression, "plotTrain": True}
+                             "func": model_linearRegression, "plotTrain": True, "plotMatLib": True, "plotPlotly": False}
 
 MODELS_BASE[MODEL_LOGIC] = {"Active": True, "splitType": SPLIT_FINAL_DAYS, "size": 0.0,
                             "preType": PRETYPE_MINMAX, "bestType": True, "crossType": True,
                             "randType": True, "gridType": True,
-                            "func": model_logisticRegression, "plotTrain": True}
+                            "func": model_logisticRegression, "plotTrain": True, "plotMatLib": True, "plotPlotly": False}
 
 MODELS_BASE[MODEL_RANDFORE] = {"Active": True, "splitType": SPLIT_FINAL_DAYS, "size": 0.0,
                                "preType": PRETYPE_MINMAX, "bestType": True, "crossType": True,
                                "randType": True, "gridType": True,
-                               "func": model_randomForest, "plotTrain": True}
+                               "func": model_randomForest, "plotTrain": True, "plotMatLib": True, "plotPlotly": False}
 
 MODELS_BASE[MODEL_ADA] = {"Active": True, "splitType": SPLIT_FINAL_DAYS, "size": 0.0,
                           "preType": PRETYPE_MINMAX, "bestType": True, "crossType": True,
                           "randType": True, "gridType": True,
-                          "func": model_adaBoostRegression, "plotTrain": True}
+                          "func": model_adaBoostRegression, "plotTrain": True, "plotMatLib": True, "plotPlotly": False}
 
 MODELS_BASE[MODEL_RIDGE] = {"Active": True, "splitType": SPLIT_FINAL_DAYS, "size": 0.0,
                             "preType": PRETYPE_MINMAX, "bestType": True, "crossType": True,
                             "randType": True, "gridType": True,
-                            "func": model_ridgeRegression, "plotTrain": True}
+                            "func": model_ridgeRegression, "plotTrain": True, "plotMatLib": True, "plotPlotly": False}
 
 
 MODELS = dict()
-MODELS[MODEL_LINEAR] = {"Active": True, "splitType": SPLIT_FINAL_DAYS, "size": 0.0,
+MODELS[MODEL_LINEAR] = {"Active": False, "splitType": SPLIT_FINAL_DAYS, "size": 0.0,
                         "preType": PRETYPE_FALSE, "bestType": False, "crossType": False,
                         "randType": True, "gridType": True,
                         "func": model_linearRegression, "plotTrain": True, "plotMatLib": True, "plotPlotly": True}
@@ -538,7 +515,7 @@ MODELS[MODEL_LINEAR] = {"Active": True, "splitType": SPLIT_FINAL_DAYS, "size": 0
 MODELS[MODEL_POLY] = {"Active": False, "splitType": SPLIT_FINAL_DAYS, "size": 0.0,
                       "preType": PRETYPE_FALSE, "bestType": False, "crossType": False,
                       "randType": True, "gridType": True,
-                      "func": model_polyRegression, "plotTrain": True}
+                      "func": model_polyRegression, "plotTrain": True, "plotMatLib": True, "plotPlotly": True}
 
 MODELS[MODEL_LOGIC] = {"Active": False, "splitType": SPLIT_FINAL_DAYS, "size": 0.0,
                        "preType": PRETYPE_MINMAX, "bestType": False, "crossType": False,
@@ -562,7 +539,7 @@ MODELS[MODEL_GRAD] = {"Active": False, "splitType": SPLIT_FINAL_DAYS, "size": 0.
 
 MODELS[MODEL_RIDGE] = {"Active": False, "splitType": SPLIT_FINAL_DAYS, "size": 0.0,
                        "preType": PRETYPE_MINMAX, "bestType": False, "crossType": True,
-                       "randType": True, "gridType": True,
+                       "randType": False, "gridType": False,
                        "func": model_ridgeRegression, "plotTrain": True, "plotMatLib": True, "plotPlotly": True}
 
 MODELS[MODEL_NEUR] = {"Active": True, "splitType": SPLIT_FINAL_DAYS, "size": 0.0,
@@ -570,7 +547,7 @@ MODELS[MODEL_NEUR] = {"Active": True, "splitType": SPLIT_FINAL_DAYS, "size": 0.0
                       "randType": False, "gridType": False,
                       "func": model_neuralNetwork, "plotTrain": True, "plotMatLib": True, "plotPlotly": True}
 
-MODELS[MODEL_NEUR_LSTM] = {"Active": False, "splitType": SPLIT_FINAL_DAYS, "size": 0.0,
+MODELS[MODEL_NEUR_LSTM] = {"Active": True, "splitType": SPLIT_FINAL_DAYS, "size": 0.20,
                            "preType": PRETYPE_MINMAX, "bestType": False, "crossType": False,
                            "randType": True, "gridType": True,
                            "func": model_neuralNetwork_LSTM, "plotTrain": True, "plotMatLib": True, "plotPlotly": True}

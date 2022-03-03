@@ -1,11 +1,12 @@
 from DataAnalysis.basic import groupByIndex, takeIndex, changeValue, manipulateDf
+from DataAnalysis.plot import plotCaso, plotModels
 from Models.models import *
 
 
 def _modelUser(df, modify, models=MODELS, plotPlotly=False):
     df = manipulateDf(df, modify)
 
-    toPlot = list()
+    toPlot = dict()
     for key in models:
         if models[key]["Active"] and key == MODEL_POLY:
             setup = models[key]
@@ -16,7 +17,8 @@ def _modelUser(df, modify, models=MODELS, plotPlotly=False):
                 if models[key]["plotMatLib"]:
                     plotCaso(df, infoModel, name, models[key]["plotTrain"])
                 if models[key]["plotPlotly"]:
-                    toPlot.append({"name": name, "info": infoModel})
+                    toPlot[name] = infoModel
+
 
         elif models[key]["Active"]:
             name = key
@@ -26,7 +28,7 @@ def _modelUser(df, modify, models=MODELS, plotPlotly=False):
             if models[key]["plotMatLib"]:
                 plotCaso(df, infoModel, name, models[key]["plotTrain"])
             if models[key]["plotPlotly"]:
-                toPlot.append({"name": name, "info": infoModel})
+                toPlot[name] = infoModel
 
     if plotPlotly:
         plotModels(df, toPlot)
@@ -100,7 +102,7 @@ def main():
     _R_SplitDays(df, False) #Quello più corretto
 
     # # REGRESSIONE MANUALE COI SETTAGGI CHE SI DESIDERANO # #
-    _R_Manual(df, MODIFY_ALL_YEAR, MODELS, True)
+    _R_Manual(df, MODIFY_WASTE_ALL, MODELS, True)
 
 
 if __name__ == "__main__":

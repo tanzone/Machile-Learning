@@ -37,23 +37,33 @@ def _modelUser(df, modify, models=MODELS, plotPlotly=False):
 
 def _R_Auto(df, run):
     if run:
-        # Primo Linear Regression su tutto il dataset con data e chiusura, predico punti casuali nel grafico
-        _modelUser(df[:], MODIFY_ALL_ALL, MODELS_BASE)
-        _modelUser(df[:], MODIFY_ALL_YEAR, MODELS_BASE)
-        # Primo Linear Regression su tutto il dataset con le features base, predico punti casuali nel grafico
-        _modelUser(df[:], MODIFY_WASTE_ALL, MODELS_BASE)
-        _modelUser(df[:], MODIFY_WASTE_YEAR, MODELS_BASE)
+        # Primo Linear Regression su tutto il dataset con le features base
+        print("PROVA SUL TUTTO IL DATASET - " + str(FUTURE_DAYS) + " GIORNI, FEATURES BASE")
+        # _modelUser(df[:], MODIFY_ALL_ALL, MODELS_BASE)
+        print("PROVA 'SU 10 anni' IL DATASET - " + str(FUTURE_DAYS) + " GIORNI, FEATURES BASE")
+        # _modelUser(df[:], MODIFY_ALL_YEAR, MODELS_BASE)
+
+        # Primo Linear Regression su tutto il dataset con data e chiusura
+        print("PROVA SUL TUTTO IL DATASET - " + str(FUTURE_DAYS) + " GIORNI, DATA")
+        # _modelUser(df[:], MODIFY_WASTE_ALL, MODELS_BASE)
+        print("PROVA 'SU 10 anni' IL DATASET - " + str(FUTURE_DAYS) + " GIORNI, DATA")
+        # _modelUser(df[:], MODIFY_WASTE_YEAR, MODELS_BASE)
+
         # Primo Linear Regression su tutto il dataset con le features avanzate, predico punti casuali nel grafico
-        df_TempPlot = df[:]
-        features = ["SMA-5", "SMA-10", "SMA-50", "SMA-100", "SMA-200", "SMA-500", "LOW-10", "HIGH-10",
-                    "EXPANDING-MEAN", "EXPANDING-STD", "BUY-200-10", "SELL-5"]
+        df_TempPlot = df
+        features = ["SMA-5", "SMA-10", "SMA-50", "SMA-100", "EMA-5", "EMA-10", "EMA-50", "EMA-100", "LOW-10", "HIGH-10"]
         addFeatures(df_TempPlot, features)
-        _modelUser(df_TempPlot, MODIFY_WASTE_ALL, MODELS_BASE)
-        _modelUser(df_TempPlot, MODIFY_ALL_ALL, MODELS_BASE)
+        df_TempPlot.dropna()
+        df_TempPlot = df_TempPlot.iloc[150:, :]
+        print("PROVA SUL TUTTO IL DATASET - " + str(FUTURE_DAYS) + " GIORNI, FEATURES AVANZATE")
+        _modelUser(df_TempPlot, MODIFY_WASTE_ALL, MODELS_BASE, True)
+        print("PROVA 'SU 10 anni' IL DATASET - " + str(FUTURE_DAYS) + " GIORNI, FEATURES AVANZATE")
+        _modelUser(df_TempPlot, MODIFY_ALL_ALL, MODELS_BASE, True)
 
 
-def _R_Manual(df, modifyType=MODIFY_WASTE_YEAR, modelsType=MODELS, plotPlotly=True):
-    _modelUser(df[:], modifyType, modelsType, plotPlotly)
+def _R_Manual(df, modifyType=MODIFY_WASTE_YEAR, modelsType=MODELS, plotPlotly=True, run=False):
+    if run:
+        _modelUser(df[:], modifyType, modelsType, plotPlotly)
 
 
 def main():
@@ -67,9 +77,9 @@ def main():
     # Regressione eseguita con diverse specifiche da confrontare
     _R_Auto(df, True)
 
-    # # METTERE A TRUE SE SI VUOLE ESEGUIRE QUEL BLOCCO # #
+    # # METTERE A TRUE L'ULTIMO PARAMETRO SE SI VUOLE ESEGUIRE QUEL BLOCCO # #
     # # Regressione manuale per provare a sperimentare sul datasets
-    _R_Manual(df, MODIFY_WASTE_YEAR, MODELS, False)
+    _R_Manual(df, MODIFY_WASTE_YEAR, MODELS, False, False)
 
 
 if __name__ == "__main__":

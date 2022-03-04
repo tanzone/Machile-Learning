@@ -477,22 +477,22 @@ def model_neuralNetwork_LSTM(name, df, splitType=SPLIT_FINAL_SIZE, size=0.20, pr
 
 MODELS_BASE = dict()
 MODELS_BASE[MODEL_LINEAR] = {"Active": True, "splitType": SPLIT_FINAL_DAYS, "size": 0.0,
-                             "preType": PRETYPE_FALSE, "bestType": True, "crossType": True,
+                             "preType": PRETYPE_FALSE, "bestType": True, "crossType": False,
                              "randType": False, "gridType": False,
                              "func": model_linearRegression, "plotTrain": False, "plotMatLib": True, "plotPlotly": True}
 
 MODELS_BASE[MODEL_RANDFORE] = {"Active": True, "splitType": SPLIT_FINAL_DAYS, "size": 0.0,
-                               "preType": PRETYPE_MINMAX, "bestType": True, "crossType": True,
+                               "preType": PRETYPE_MINMAX, "bestType": True, "crossType": False,
                                "randType": False, "gridType": False,
                                "func": model_randomForest, "plotTrain": False, "plotMatLib": True, "plotPlotly": True}
 
 MODELS_BASE[MODEL_ADA] = {"Active": True, "splitType": SPLIT_FINAL_DAYS, "size": 0.0,
-                          "preType": PRETYPE_MINMAX, "bestType": True, "crossType": True,
+                          "preType": PRETYPE_MINMAX, "bestType": True, "crossType": False,
                           "randType": False, "gridType": False,
                           "func": model_adaBoostRegression, "plotTrain": False, "plotMatLib": True, "plotPlotly": True}
 
 MODELS_BASE[MODEL_RIDGE] = {"Active": True, "splitType": SPLIT_FINAL_DAYS, "size": 0.0,
-                            "preType": PRETYPE_MINMAX, "bestType": True, "crossType": True,
+                            "preType": PRETYPE_MINMAX, "bestType": True, "crossType": False,
                             "randType": False, "gridType": False,
                             "func": model_ridgeRegression, "plotTrain": False, "plotMatLib": True, "plotPlotly": True}
 

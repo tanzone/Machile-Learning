@@ -22,7 +22,7 @@ DATE_START = "1500-01-01"
 DATE_END = "3000-01-01"
 
 STANDARD_FEATURE = ["SMA-5", "SMA-100", "SMA-200", "BUY-200-10", "SELL-5"]
-STANDARD_FEATURE_MATLIB = ["CloseUSD", "SMA-5", "SMA-50"]
+STANDARD_FEATURE_MATLIB = ["CloseUSD", "SMA-5", "SMA-50", "EMA-10"]
 
 
 def plotPie(*datasets, col: str = "Index"):

@@ -5,9 +5,9 @@ from DataAnalysis.utility import *
 
 
 def main():
-    dfData = pd.read_csv("../Dataset/indexData.csv")
-    dfInfo = pd.read_csv("../Dataset/indexInfo.csv")
-    dfProc = pd.read_csv("../Dataset/indexProcessed.csv")
+    dfData = pd.read_csv("../Datasets/indexData.csv")
+    dfInfo = pd.read_csv("../Datasets/indexInfo.csv")
+    dfProc = pd.read_csv("../Datasets/indexProcessed.csv")
 
     # # info sui dataset
     # info(dfData, dfInfo, dfProc)
@@ -64,7 +64,7 @@ def main():
     # # prendo i vari indici e leggo il file correlato poi stampo il plot degli stocks
     # dfReaded= dict()
     # for i in takeIndex(dfProc):
-    #     dfReaded[i] = pd.read_csv("../Dataset/"+i+".csv")
+    #     dfReaded[i] = pd.read_csv("../Datasets/"+i+".csv")
     # plotStocksTrend(dfReaded)
     #
     #
@@ -135,7 +135,8 @@ def main():
     #
     #
     # # ADF test per la stazionarietà
-    # toTest = dfProc[["Date", "CloseUSD"]].copy()
+    # stock = "HSI"
+    # toTest = groupByIndex(dfProc, takeIndex(dfProc))[stock]
     # toTest.set_index("Date", inplace=True)
     # toTest.index = pd.to_datetime(toTest.index)
     # toTest = toTest.resample('1M').mean()

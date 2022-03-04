@@ -89,7 +89,7 @@ def _R_Manual(df, modifyType=MODIFY_WASTE_YEAR, modelsType=MODELS, plotPlotly=Tr
 
 def main():
     stock = "HSI"
-    dfProc = pd.read_csv("../Dataset/indexProcessed.csv")
+    dfProc = pd.read_csv("../Datasets/indexProcessed.csv")
     df = groupByIndex(dfProc, takeIndex(dfProc))[stock]
     # trasformazione delle colonne in euro
     changeValue(df, stock, "GDAXI")

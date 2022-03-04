@@ -75,7 +75,7 @@ def getAllCurrency(datasets):
 
 
 def changeValue(df, moneyCurr, moneyTran):
-    dfProc = pd.read_csv("../Dataset/indexProcessed.csv")
+    dfProc = pd.read_csv("../Datasets/indexProcessed.csv")
     rates = getAllCurrency(groupByIndex(dfProc, takeIndex(dfProc)))
     change = rates[moneyCurr + "_" + moneyTran]
 

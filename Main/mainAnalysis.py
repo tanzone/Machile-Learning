@@ -33,7 +33,7 @@ def main():
     # writeCsv_Index(groupByIndex(dfProc, takeIndex(dfProc)))
     #
     #
-    # # Pandas Profiling
+    # # Pandas _Profiling
     # # NON FUNZIONA SENZA LIBRERIA DI PANDAS_PROFILING
     # # PROBLEMA INSTALLAZIONE LIBRERIA SUL PORTATILE
     # # RISULTATO COMUNQUE PRESENTE NELLA CARTELLA (PLOTS) "HSI_PROFILING"

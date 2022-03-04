@@ -163,7 +163,7 @@ def plotCaso(df, infoModel, name, plotTrain: bool = True):
 def _plotly(title, name, colX, colY, data):
     layout = dict(title=title, xaxis=dict(title=colX), yaxis=dict(title=colY), plot_bgcolor="gray")
     fig = dict(data=data, layout=layout)
-    ply.plot(fig, filename="../Plots/" + name + ".html")
+    ply.plot(fig, filename="../_Plots/" + name + ".html")
 
 
 def plotSomething_line(df, colX: str = "Date", colY: str = "CloseUSD", name: str = "temp", color=None,

@@ -1,5 +1,6 @@
 from DataAnalysis.basic import groupByIndex, takeIndex, changeValue, manipulateDf
 from DataAnalysis.plot import plotCaso, plotModels
+from DataAnalysis.utility import addFeatures
 from Models.models import *
 
 
@@ -34,20 +35,7 @@ def _modelUser(df, modify, models=MODELS, plotPlotly=False):
         plotModels(df, toPlot)
 
 
-# TODO aggiungere le features e provare
-def _R_SplitCasual(df, run):
-    if run:
-        # Regression su tutto il dataset Casuale con data e chiusura, predico punti casuali nel grafico
-        _modelUser(df[:], MODIFY_ALL_ALL, MODELS_BASE)
-        _modelUser(df[:], MODIFY_ALL_YEAR, MODELS_BASE)
-        # Regression su tutto il dataset Casuale con le features base, predico punti casuali nel grafico
-        _modelUser(df[:], MODIFY_WASTE_ALL, MODELS_BASE)
-        _modelUser(df[:], MODIFY_WASTE_YEAR, MODELS_BASE)
-        # Regression su tutto il dataset Casuale con le features avanzate, predico punti casuali nel grafico
-        # Da fare-------------------
-
-
-def _R_SplitAll(df, run):
+def _R_Auto(df, run):
     if run:
         # Primo Linear Regression su tutto il dataset con data e chiusura, predico punti casuali nel grafico
         _modelUser(df[:], MODIFY_ALL_ALL, MODELS_BASE)
@@ -56,31 +44,12 @@ def _R_SplitAll(df, run):
         _modelUser(df[:], MODIFY_WASTE_ALL, MODELS_BASE)
         _modelUser(df[:], MODIFY_WASTE_YEAR, MODELS_BASE)
         # Primo Linear Regression su tutto il dataset con le features avanzate, predico punti casuali nel grafico
-        # Da fare--------------------
-
-
-def _R_SplitFinal(df, run):
-    if run:
-        # Primo Linear Regression sull parte finale del dataset con data e chiusura, predico tot size della stock
-        _modelUser(df[:], MODIFY_ALL_ALL, MODELS_BASE)
-        _modelUser(df[:], MODIFY_ALL_YEAR, MODELS_BASE)
-        # Primo Linear Regression sull parte finale del dataset con le features base, predico tot size della stock
-        _modelUser(df[:], MODIFY_WASTE_ALL, MODELS_BASE)
-        _modelUser(df[:], MODIFY_WASTE_YEAR, MODELS_BASE)
-        # Primo Linear Regression sull parte finale del dataset le features avanzate, predico tot size della stock
-        # Da fare-------------------
-
-
-def _R_SplitDays(df, run):
-    if run:
-        # Primo Linear Regression su tutto il dataset con data e chiusura, predico tot giorni futuri
-        _modelUser(df[:], MODIFY_ALL_ALL, MODELS_BASE)
-        _modelUser(df[:], MODIFY_ALL_YEAR, MODELS_BASE)
-        # # Primo Linear Regression su tutto il dataset con le features base, predico tot giorni futuri
-        _modelUser(df[:], MODIFY_WASTE_ALL, MODELS_BASE)
-        _modelUser(df[:], MODIFY_WASTE_YEAR, MODELS_BASE)
-        # Primo Linear Regression su tutto il dataset con le features avanzate, predico tot giorni futuri
-        # Da fare--------------------
+        df_TempPlot = df[:]
+        features = ["SMA-5", "SMA-10", "SMA-50", "SMA-100", "SMA-200", "SMA-500", "LOW-10", "HIGH-10",
+                    "EXPANDING-MEAN", "EXPANDING-STD", "BUY-200-10", "SELL-5"]
+        addFeatures(df_TempPlot, features)
+        _modelUser(df_TempPlot, MODIFY_WASTE_ALL, MODELS_BASE)
+        _modelUser(df_TempPlot, MODIFY_ALL_ALL, MODELS_BASE)
 
 
 def _R_Manual(df, modifyType=MODIFY_WASTE_YEAR, modelsType=MODELS, plotPlotly=True):
@@ -95,14 +64,12 @@ def main():
     changeValue(df, stock, "GDAXI")
 
     # # METTERE A TRUE SE SI VUOLE ESEGUIRE QUEL BLOCCO # #
-    # Regressione eseguita con diversi tipi di split
-    _R_SplitCasual(df, False)
-    _R_SplitAll(df, False)
-    _R_SplitFinal(df, False)
-    _R_SplitDays(df, False) #Quello più corretto
+    # Regressione eseguita con diverse specifiche da confrontare
+    _R_Auto(df, True)
 
-    # # REGRESSIONE MANUALE COI SETTAGGI CHE SI DESIDERANO # #
-    _R_Manual(df, MODIFY_WASTE_YEAR, MODELS, True)
+    # # METTERE A TRUE SE SI VUOLE ESEGUIRE QUEL BLOCCO # #
+    # # Regressione manuale per provare a sperimentare sul datasets
+    _R_Manual(df, MODIFY_WASTE_YEAR, MODELS, False)
 
 
 if __name__ == "__main__":

@@ -34,8 +34,11 @@ def main():
     #
     #
     # # Pandas Profiling
-    # stock = "HSI"
-    # pandasProfilingHelp(groupByIndex(dfProc, takeIndex(dfProc))[stock], stock)
+    # # NON FUNZIONA SENZA LIBRERIA DI PANDAS_PROFILING
+    # # PROBLEMA INSTALLAZIONE LIBRERIA SUL PORTATILE
+    # # RISULTATO COMUNQUE PRESENTE NELLA CARTELLA (PLOTS) "HSI_PANDAS"
+    # # stock = "HSI"
+    # # pandasProfilingHelp(groupByIndex(dfProc, takeIndex(dfProc))[stock], stock)
     #
     #
     # # Plot a torta della percentuale di indici che compaiono nel dataset

@@ -102,7 +102,7 @@ def main():
     _R_SplitDays(df, False) #Quello più corretto
 
     # # REGRESSIONE MANUALE COI SETTAGGI CHE SI DESIDERANO # #
-    _R_Manual(df, MODIFY_WASTE_ALL, MODELS, True)
+    _R_Manual(df, MODIFY_WASTE_YEAR, MODELS, True)
 
 
 if __name__ == "__main__":

@@ -509,44 +509,44 @@ MODELS = dict()
 MODELS[MODEL_LINEAR] = {"Active": False, "splitType": SPLIT_FINAL_DAYS, "size": 0.0,
                         "preType": PRETYPE_FALSE, "bestType": False, "crossType": False,
                         "randType": True, "gridType": True,
-                        "func": model_linearRegression, "plotTrain": True, "plotMatLib": True, "plotPlotly": True}
+                        "func": model_linearRegression, "plotTrain": True, "plotMatLib": False, "plotPlotly": True}
 
 MODELS[MODEL_POLY] = {"Active": False, "splitType": SPLIT_FINAL_DAYS, "size": 0.0,
                       "preType": PRETYPE_FALSE, "bestType": False, "crossType": False,
                       "randType": True, "gridType": True,
-                      "func": model_polyRegression, "plotTrain": True, "plotMatLib": True, "plotPlotly": True}
+                      "func": model_polyRegression, "plotTrain": True, "plotMatLib": False, "plotPlotly": True}
 
 MODELS[MODEL_LOGIC] = {"Active": False, "splitType": SPLIT_FINAL_DAYS, "size": 0.0,
                        "preType": PRETYPE_MINMAX, "bestType": False, "crossType": False,
                        "randType": True, "gridType": True,
-                       "func": model_logisticRegression, "plotTrain": True, "plotMatLib": True, "plotPlotly": True}
+                       "func": model_logisticRegression, "plotTrain": True, "plotMatLib": False, "plotPlotly": True}
 
 MODELS[MODEL_RANDFORE] = {"Active": False, "splitType": SPLIT_FINAL_DAYS, "size": 0.0,
                           "preType": PRETYPE_MINMAX, "bestType": False, "crossType": False,
                           "randType": True, "gridType": True,
-                          "func": model_randomForest, "plotTrain": True, "plotMatLib": True, "plotPlotly": True}
+                          "func": model_randomForest, "plotTrain": True, "plotMatLib": False, "plotPlotly": True}
 
-MODELS[MODEL_ADA] = {"Active": False, "splitType": SPLIT_FINAL_DAYS, "size": 0.0,
+MODELS[MODEL_ADA] = {"Active": True, "splitType": SPLIT_FINAL_DAYS, "size": 0.0,
                      "preType": PRETYPE_MINMAX, "bestType": False, "crossType": False,
                      "randType": True, "gridType": True,
-                     "func": model_adaBoostRegression, "plotTrain": True, "plotMatLib": True, "plotPlotly": True}
+                     "func": model_adaBoostRegression, "plotTrain": True, "plotMatLib": False, "plotPlotly": True}
 
-MODELS[MODEL_GRAD] = {"Active": False, "splitType": SPLIT_FINAL_DAYS, "size": 0.0,
+MODELS[MODEL_GRAD] = {"Active": True, "splitType": SPLIT_FINAL_DAYS, "size": 0.0,
                       "preType": PRETYPE_MINMAX, "bestType": False, "crossType": False,
                       "randType": True, "gridType": True,
-                      "func": model_gradientBoostRegression, "plotTrain": True, "plotMatLib": True, "plotPlotly": True}
+                      "func": model_gradientBoostRegression, "plotTrain": True, "plotMatLib": False, "plotPlotly": True}
 
-MODELS[MODEL_RIDGE] = {"Active": False, "splitType": SPLIT_FINAL_DAYS, "size": 0.0,
+MODELS[MODEL_RIDGE] = {"Active": True, "splitType": SPLIT_FINAL_DAYS, "size": 0.0,
                        "preType": PRETYPE_MINMAX, "bestType": False, "crossType": True,
                        "randType": False, "gridType": False,
-                       "func": model_ridgeRegression, "plotTrain": True, "plotMatLib": True, "plotPlotly": True}
+                       "func": model_ridgeRegression, "plotTrain": True, "plotMatLib": False, "plotPlotly": True}
 
 MODELS[MODEL_NEUR] = {"Active": True, "splitType": SPLIT_FINAL_DAYS, "size": 0.0,
                       "preType": PRETYPE_MINMAX, "bestType": False, "crossType": False,
                       "randType": False, "gridType": False,
-                      "func": model_neuralNetwork, "plotTrain": True, "plotMatLib": True, "plotPlotly": True}
+                      "func": model_neuralNetwork, "plotTrain": True, "plotMatLib": False, "plotPlotly": True}
 
 MODELS[MODEL_NEUR_LSTM] = {"Active": True, "splitType": SPLIT_FINAL_DAYS, "size": 0.20,
                            "preType": PRETYPE_MINMAX, "bestType": False, "crossType": False,
                            "randType": True, "gridType": True,
-                           "func": model_neuralNetwork_LSTM, "plotTrain": True, "plotMatLib": True, "plotPlotly": True}
+                           "func": model_neuralNetwork_LSTM, "plotTrain": True, "plotMatLib": False, "plotPlotly": True}

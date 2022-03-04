@@ -15,10 +15,12 @@ def info(*datasets):
         print("------------------------------------------\n")
 
 
-def pandasProfilingHelp(df, name):
-    from pandas_profiling import ProfileReport
-    print(ProfileReport(df, title="Report of " + name))
-    print("------------------------------------------\n")
+# PROBLEMI SUL PORTATILE
+# def pandasProfilingHelp(df, name):
+#    import pandas_profiling as pp
+#    print(pp.ProfileReport(df, title="Report of " + name))
+#    print("------------------------------------------\n")
+
 
 def controlValues(*datasets):
     for df in datasets:

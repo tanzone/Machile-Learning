@@ -161,7 +161,7 @@ def plotCaso(df, infoModel, name, plotTrain: bool = True):
 # PLOTLY
 ########################################################################################################################
 def _plotly(title, name, colX, colY, data):
-    layout = dict(title=title, xaxis=dict(title=colX), yaxis=dict(title=colY), plot_bgcolor="black")
+    layout = dict(title=title, xaxis=dict(title=colX), yaxis=dict(title=colY), plot_bgcolor="gray")
     fig = dict(data=data, layout=layout)
     ply.plot(fig, filename="../Plots/" + name + ".html")
 
